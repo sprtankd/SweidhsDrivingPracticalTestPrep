@@ -12,13 +12,16 @@ Single file, no build step, works offline after first load (Google Fonts are the
   rear wiper, sensitivity thumbwheel), with a live telltale cluster and animated windscreen.
 - **Examiner drill** — 10 random spoken-style commands ("Blinka höger…"), validated against
   what you actually do on the stalks. Score, streak, hints.
+- **Guide** — labelled stalk diagrams plus real annotated photos of the XC40/XC60 stalks
+  (`img/`, Wikimedia Commons, CC BY-SA 4.0: Dinkun Chen, deathpallie325 — cropped/brightened).
+  On wide desktop screens the guide also docks left/right of the cockpit.
 - **Checks** — säkerhetskontroll study cards: inside / outside / under the bonnet / other,
   with XC40-EV and XC60-PHEV specific notes (no oil on the EV, no dipstick on the T8, etc.).
 - **Quiz** — examiner-style multiple choice with explanations.
 
 ## Deploy to GitHub Pages
 
-1. Create a repo and push this folder (just `index.html` + this README).
+1. Create a repo and push this folder (`index.html`, the `img/` folder and this README).
 2. Repo **Settings → Pages → Source: Deploy from a branch**, branch `main`, folder `/ (root)`.
 3. Open `https://<username>.github.io/<repo>/` on your phone — add to Home Screen for an app feel.
 

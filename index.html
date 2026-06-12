@@ -387,6 +387,50 @@ body[data-car="xc60"] .bigBtn{color:#241a05; box-shadow:0 6px 24px #ffc4633d}
 .quizEnd .big{font-family:'Chakra Petch'; font-size:3rem; font-weight:700; color:var(--accent)}
 .quizEnd p{color:var(--mut); font-size:.84rem}
 
+/* ---------- guide (photos + diagrams) ---------- */
+.gGrid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+@media(max-width:620px){.gGrid{grid-template-columns:1fr}}
+.photoCard{padding:10px}
+.photoCard .ph{position:relative; border-radius:9px; overflow:hidden; border:1px solid #1b2735; background:var(--inset)}
+.photoCard img{display:block; width:100%; height:auto}
+.pin{
+  position:absolute; width:22px; height:22px; margin:-11px 0 0 -11px; border-radius:50%;
+  background:var(--yellow); color:#1d1703; font-family:'Chakra Petch'; font-weight:700; font-size:.72rem;
+  display:grid; place-items:center; border:2px solid #1d1703; box-shadow:0 0 0 2px #ffd34d55, 0 2px 8px #000a;
+  animation:pinpulse 2.4s ease-in-out infinite;
+}
+@keyframes pinpulse{0%,100%{box-shadow:0 0 0 2px #ffd34d55,0 2px 8px #000a}50%{box-shadow:0 0 0 6px #ffd34d22,0 2px 8px #000a}}
+.pinLegend{margin:9px 0 0; padding:0; list-style:none; font-size:.74rem; color:#c6d4e2}
+.pinLegend li{display:flex; gap:8px; margin-top:5px; line-height:1.45}
+.pinLegend .n{
+  flex:0 0 18px; height:18px; border-radius:50%; background:var(--yellow); color:#1d1703;
+  font-family:'Chakra Petch'; font-weight:700; font-size:.62rem; display:grid; place-items:center; margin-top:1px;
+}
+.photoCred{margin-top:8px; font-size:.6rem; color:var(--dim); line-height:1.4}
+.photoCred a{color:var(--dim)}
+.diagWrap svg{display:block; width:100%; height:auto}
+.diagWrap{padding:10px}
+svg .dln{stroke:#3d5168; stroke-width:1.2; fill:none}
+svg .dtx{font-family:'Chakra Petch'; font-size:9.5px; fill:#8aa0b6; letter-spacing:.03em}
+svg .dtb{font-family:'Chakra Petch'; font-size:10px; font-weight:600; fill:#e9f0f7}
+svg .dac{fill:#8fe3f7}
+body[data-car="xc60"] svg .dac{fill:#ffc463}
+svg .dye{fill:#ffd34d}
+svg .dgr{fill:#41e07d}
+
+/* ---------- desktop side rails ---------- */
+.rail{display:none}
+@media(min-width:1280px){
+  body[data-tab="cockpit"] .rail{
+    display:block; position:fixed; top:86px; bottom:14px; z-index:5;
+    width:min(320px, calc(50vw - 410px)); overflow-y:auto; overscroll-behavior:contain;
+    scrollbar-width:thin;
+  }
+  .rail.left{left:12px}
+  .rail.right{right:12px}
+  .rail .panel{margin-top:0; margin-bottom:12px}
+}
+
 footer{
   margin-top:26px; color:var(--dim); font-size:.66rem; text-align:center; line-height:1.6; padding:0 8px;
 }
@@ -537,6 +581,18 @@ footer a{color:var(--mut)}
 
 </section>
 
+<!-- ============ GUIDE TAB ============ -->
+<section class="tabpane" id="pane-guide">
+  <p class="intro">How the real stalks look and where every control sits. Diagrams first (these match the trainer), then real photos with <b>numbered pins</b>. On a wide desktop screen these also dock left and right of the cockpit.</p>
+  <div class="gGrid" id="guideDiagrams"></div>
+  <div class="gGrid" id="guidePhotos"></div>
+  <p class="photoCred" style="text-align:center; margin-top:14px">
+    Photos: <a href="https://commons.wikimedia.org/wiki/File:VOLVO_XC40_RECHARGE_INTERIOR.jpg">Dinkun Chen</a> (XC40) ·
+    <a href="https://commons.wikimedia.org/wiki/File:2023_Volvo_XC60_interior.jpg">deathpallie325</a> (XC60) —
+    <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>, cropped &amp; brightened.
+  </p>
+</section>
+
 <!-- ============ CHECKS TAB ============ -->
 <section class="tabpane" id="pane-checks">
   <p class="intro">At the start of the Swedish practical test (<b>körprov B</b>) the examiner spends ~3–5 minutes on a <b>säkerhetskontroll</b> — usually <b>1–3 questions</b> from: inside the car, outside the car, and under the bonnet. You must <i>show and explain</i>, not recite. If you find a fault, say <b>what you'd do about it</b> (top up / replace / don't drive — verkstad).</p>
@@ -577,9 +633,13 @@ footer a{color:var(--mut)}
 
 <nav class="tabbar">
   <button class="on" data-tab="cockpit"><span class="ic">🕹</span>Stalks</button>
+  <button data-tab="guide"><span class="ic">📷</span>Guide</button>
   <button data-tab="checks"><span class="ic">🔧</span>Checks</button>
   <button data-tab="quiz"><span class="ic">❓</span>Quiz</button>
 </nav>
+
+<aside class="rail left" id="railL"></aside>
+<aside class="rail right" id="railR"></aside>
 
 <div id="toast"></div>
 
@@ -1225,6 +1285,101 @@ $('qNext').addEventListener('click',()=>{
 $('quizGo').addEventListener('click',startQuiz);
 $('quizAgain').addEventListener('click',startQuiz);
 
+/* ================= GUIDE (diagrams + photos) ================= */
+function arrowV(x,y1,y2){ /* vertical arrow line with head at y2 */
+  const dir=y2>y1?1:-1, hx=6, hy=12;
+  return `<line x1="${x}" y1="${y1}" x2="${x}" y2="${y2-dir*4}" class="dln"/>`+
+         `<polygon points="${x-hx},${y2-dir*hy} ${x+hx},${y2-dir*hy} ${x},${y2}" fill="#3d5168"/>`;
+}
+const DIAG_LEFT = `
+<div class="panel diagWrap"><p class="panelTitle">Left stalk — lights &amp; blinkers</p>
+<svg viewBox="0 0 400 300" role="img" aria-label="Left stalk diagram">
+  <rect x="342" y="55" width="58" height="200" rx="14" fill="#1d2937" stroke="#2c3e54"/>
+  <text x="374" y="155" class="dtx" text-anchor="middle" transform="rotate(-90 374 155)">STEERING COLUMN</text>
+  <rect x="64" y="134" width="278" height="26" rx="13" fill="#2b3a4b" stroke="#46596f"/>
+  <rect x="88" y="127" width="48" height="40" rx="9" fill="#16202c" stroke="#5a7188"/>
+  <line x1="98" y1="131" x2="98" y2="163" class="dln"/><line x1="112" y1="131" x2="112" y2="163" class="dln"/><line x1="126" y1="131" x2="126" y2="163" class="dln"/>
+  <path d="M88 120 C 100 106, 124 106, 136 120" class="dln"/>
+  <polygon points="130,112 140,124 126,124" fill="#3d5168"/>
+  <text x="112" y="92" class="dtb" text-anchor="middle">rotate collar</text>
+  <text x="112" y="104" class="dtx" text-anchor="middle">O · AUTO · ☼ halvljus</text>
+  <circle cx="180" cy="147" r="7" fill="#16202c" stroke="#5a7188"/>
+  <circle cx="202" cy="147" r="7" fill="#16202c" stroke="#5a7188"/>
+  ${arrowV(252,134,98)}
+  <text x="252" y="66" class="dtb" text-anchor="middle">UP = RIGHT blinkers</text>
+  <text x="252" y="78" class="dtx" text-anchor="middle">tap = 3 blinks · hold = latch</text>
+  ${arrowV(252,160,196)}
+  <text x="252" y="218" class="dtb" text-anchor="middle">DOWN = LEFT blinkers</text>
+  <text x="252" y="230" class="dtx" text-anchor="middle">blinkers vänster</text>
+  ${arrowV(40,134,98)}
+  <text x="52" y="66" class="dtb" text-anchor="middle">PUSH away</text>
+  <text x="52" y="78" class="dtx" text-anchor="middle">helljus ON</text>
+  ${arrowV(40,160,196)}
+  <text x="52" y="218" class="dtb" text-anchor="middle">PULL</text>
+  <text x="52" y="230" class="dtx" text-anchor="middle">flash / helljus OFF</text>
+  <text x="200" y="262" class="dtx" text-anchor="middle">● ●  fog-light buttons on the stalk (rear fog = dimbakljus, lower button)</text>
+  <text x="200" y="278" class="dtx" text-anchor="middle">AHB: in AUTO, turn the collar one notch further — it springs back</text>
+</svg></div>`;
+const DIAG_RIGHT = `
+<div class="panel diagWrap"><p class="panelTitle">Right stalk — wipers &amp; washers</p>
+<svg viewBox="0 0 400 300" role="img" aria-label="Right stalk diagram">
+  <rect x="0" y="55" width="58" height="200" rx="14" fill="#1d2937" stroke="#2c3e54"/>
+  <text x="26" y="155" class="dtx" text-anchor="middle" transform="rotate(-90 26 155)">STEERING COLUMN</text>
+  <rect x="54" y="134" width="282" height="26" rx="13" fill="#2b3a4b" stroke="#46596f"/>
+  <circle cx="348" cy="147" r="17" fill="#16202c" stroke="#5a7188"/>
+  <line x1="342" y1="134" x2="342" y2="160" class="dln"/><line x1="348" y1="132" x2="348" y2="162" class="dln"/><line x1="354" y1="134" x2="354" y2="160" class="dln"/>
+  <line x1="352" y1="128" x2="378" y2="64" class="dln"/>
+  <text x="396" y="46" class="dtb" text-anchor="end">thumbwheel</text>
+  <text x="396" y="58" class="dtx" text-anchor="end">rain-sensor sensitivity</text>
+  <rect x="170" y="139" width="26" height="17" rx="5" fill="#16202c" stroke="#5a7188"/>
+  <text x="183" y="152" class="dtx" text-anchor="middle" style="font-size:11px">☂</text>
+  <rect x="282" y="135" width="32" height="11" rx="4" fill="#16202c" stroke="#5a7188"/>
+  <rect x="282" y="149" width="32" height="11" rx="4" fill="#16202c" stroke="#5a7188"/>
+  <text x="298" y="144" class="dtx" text-anchor="middle" style="font-size:7px">INT</text>
+  <text x="298" y="158" class="dtx" text-anchor="middle" style="font-size:7px">ON</text>
+  ${arrowV(140,134,98)}
+  <text x="95" y="66" class="dtb" text-anchor="middle">PUSH away</text>
+  <text x="95" y="78" class="dtx" text-anchor="middle">rear wash + wipe</text>
+  ${arrowV(250,134,98)}
+  <text x="248" y="66" class="dtb" text-anchor="middle">UP = more wipe</text>
+  <text x="248" y="78" class="dtx" text-anchor="middle">INT/AUTO → normal → fast</text>
+  ${arrowV(140,160,196)}
+  <text x="90" y="218" class="dtb" text-anchor="middle">PULL towards you</text>
+  <text x="90" y="230" class="dtx" text-anchor="middle">spola + 3 sweeps</text>
+  ${arrowV(250,160,196)}
+  <text x="258" y="218" class="dtb" text-anchor="middle">DOWN past OFF</text>
+  <text x="258" y="230" class="dtx" text-anchor="middle">single sweep</text>
+  <text x="200" y="262" class="dtx" text-anchor="middle">☂ button = rain sensor on/off · INT / ON = rear-window wiper</text>
+  <text x="200" y="278" class="dtx" text-anchor="middle">reverse gear auto-wipes the rear when front wipers are on</text>
+</svg></div>`;
+
+const PHOTOS=[
+ {img:'img/xc60_cockpit.jpg', title:'XC60 — driver view', alt:'Volvo XC60 steering wheel from driver seat',
+  pins:[{x:18.3,y:44.9,t:'Left stalk — indicators + lighting collar (light symbols visible on it)'},
+        {x:71.3,y:44.9,t:'Right stalk — wipers; rear-wiper buttons sit on its end'}]},
+ {img:'img/xc60_stalk.jpg', title:'XC60 — left stalk close-up', alt:'Close-up of Volvo XC60 left stalk behind the wheel',
+  pins:[{x:59,y:71,t:'Lighting collar with the ☼ halvljus marking — rotate for O / AUTO / ☼'}]},
+ {img:'img/xc40_cockpit.jpg', title:'XC40 — from the passenger side', alt:'Volvo XC40 Recharge steering wheel and right stalk',
+  pins:[{x:73.3,y:51.1,t:'Right stalk — the two stacked icons are the rear-wiper buttons'},
+        {x:33,y:42,t:'Left stalk sits mirror-opposite on the far side (hidden here)'}]},
+ {img:'img/xc40_stalk.jpg', title:'XC40 — right stalk tip', alt:'Close-up of Volvo XC40 right wiper stalk end',
+  pins:[{x:87.1,y:66.5,t:'Rear-window wiper buttons: intermittent (top) · continuous (bottom)'},
+        {x:85,y:81.2,t:'Ridged thumbwheel — rain-sensor sensitivity'}]},
+];
+function photoCardHTML(p){
+  const pins=p.pins.map((q,i)=>`<span class="pin" style="left:${q.x}%;top:${q.y}%">${i+1}</span>`).join('');
+  const leg=p.pins.map((q,i)=>`<li><span class="n">${i+1}</span><span>${q.t}</span></li>`).join('');
+  return `<div class="panel photoCard"><p class="panelTitle">${p.title}</p>
+    <div class="ph"><img src="${p.img}" alt="${p.alt}" loading="lazy">${pins}</div>
+    <ol class="pinLegend">${leg}</ol></div>`;
+}
+function buildGuide(){
+  $('guideDiagrams').innerHTML = DIAG_LEFT + DIAG_RIGHT;
+  $('guidePhotos').innerHTML = PHOTOS.map(photoCardHTML).join('');
+  $('railL').innerHTML = DIAG_LEFT + photoCardHTML(PHOTOS[1]) + photoCardHTML(PHOTOS[0]);
+  $('railR').innerHTML = DIAG_RIGHT + photoCardHTML(PHOTOS[3]) + photoCardHTML(PHOTOS[2]);
+}
+
 /* ================= TABS / CAR / SOUND ================= */
 document.querySelectorAll('nav.tabbar button').forEach(b=>{
   b.addEventListener('click',()=>{
@@ -1232,6 +1387,7 @@ document.querySelectorAll('nav.tabbar button').forEach(b=>{
     b.classList.add('on');
     document.querySelectorAll('.tabpane').forEach(p=>p.classList.remove('on'));
     $('pane-'+b.dataset.tab).classList.add('on');
+    document.body.dataset.tab=b.dataset.tab;
     window.scrollTo({top:0});
   });
 });
@@ -1256,7 +1412,9 @@ $('sndBtn').addEventListener('click',()=>{
 });
 
 /* ================= INIT ================= */
+document.body.dataset.tab='cockpit';
 buildChecks();
+buildGuide();
 render();
 </script>
 </body>
