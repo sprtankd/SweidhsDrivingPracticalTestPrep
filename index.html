@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0e14">
+<title>Körprov Cockpit — Volvo XC40 / XC60 stalk &amp; safety-check trainer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Schibsted+Grotesk:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg0:#070b10; --bg1:#0c1219; --panel:#121a25; --panel2:#16202e; --inset:#0a1016;
+  --line:#22304230; --line2:#2c3e54;
+  --ink:#e9f0f7; --mut:#8aa0b6; --dim:#5c7188;
+  --green:#41e07d; --blue:#5cbcff; --amber:#ffb340; --red:#ff5f5f;
+  --yellow:#ffd34d; --ice:#8fe3f7;
+  --accent:#8fe3f7;
+  --radius:14px;
+  --tap:48px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{font-size:16px}
+body{
+  margin:0; background:var(--bg0); color:var(--ink);
+  font-family:'Schibsted Grotesk',system-ui,sans-serif;
+  line-height:1.45; min-height:100dvh;
+  touch-action:manipulation;
+  background-image:
+    radial-gradient(1200px 500px at 50% -150px, #14304255, transparent 70%),
+    radial-gradient(900px 400px at 85% 0px, #2a455511, transparent 70%),
+    linear-gradient(180deg,#0a1119 0%, #070b10 40%);
+  background-attachment:fixed;
+  -webkit-font-smoothing:antialiased;
+}
+body::after{ /* grain */
+  content:""; position:fixed; inset:0; pointer-events:none; opacity:.05; z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+}
+h1,h2,h3,.disp{font-family:'Chakra Petch',monospace; letter-spacing:.04em}
+button{font-family:inherit; color:inherit; background:none; border:none; cursor:pointer; touch-action:manipulation}
+::selection{background:#2c5a72; color:#fff}
+
+/* ---------- header ---------- */
+header{
+  position:sticky; top:0; z-index:40;
+  padding:calc(10px + var(--safe-t)) 14px 10px;
+  background:linear-gradient(180deg,#0a111add 60%, #0a111a00);
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+}
+.brand{display:flex; flex-direction:column; margin-right:auto}
+.brand h1{margin:0; font-size:1.02rem; font-weight:700; text-transform:uppercase; letter-spacing:.14em}
+.brand h1 em{font-style:normal; color:var(--accent)}
+.brand small{color:var(--dim); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase}
+.carSwitch{display:flex; background:var(--inset); border:1px solid var(--line2); border-radius:99px; padding:3px; gap:3px}
+.carSwitch button{
+  padding:7px 13px; border-radius:99px; font-family:'Chakra Petch'; font-weight:600;
+  font-size:.74rem; color:var(--mut); letter-spacing:.05em; transition:all .25s;
+}
+.carSwitch button.on{background:var(--accent); color:#06222b; box-shadow:0 0 16px #8fe3f755}
+body[data-car="xc60"] .carSwitch button.on{box-shadow:0 0 16px #ffb34055}
+.iconBtn{
+  width:38px;height:38px;border-radius:50%;border:1px solid var(--line2);
+  background:var(--inset); font-size:1rem; display:grid; place-items:center; color:var(--mut);
+}
+.iconBtn.on{color:var(--yellow); border-color:#5a4d22}
+
+body[data-car="xc60"]{--accent:#ffc463}
+
+/* ---------- layout ---------- */
+main{max-width:760px; margin:0 auto; padding:4px 12px calc(86px + var(--safe-b)); position:relative; z-index:1}
+.tabpane{display:none; animation:fadeUp .35s ease both}
+.tabpane.on{display:block}
+@keyframes fadeUp{from{opacity:0; transform:translateY(8px)}to{opacity:1; transform:none}}
+
+nav.tabbar{
+  position:fixed; bottom:0; left:0; right:0; z-index:50;
+  display:flex; justify-content:center; gap:4px;
+  padding:8px 10px calc(8px + var(--safe-b));
+  background:#0a111add; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  border-top:1px solid var(--line2);
+}
+nav.tabbar button{
+  flex:1; max-width:180px; padding:9px 6px; border-radius:12px;
+  display:flex; flex-direction:column; align-items:center; gap:2px;
+  color:var(--dim); font-size:.66rem; font-family:'Chakra Petch'; font-weight:600;
+  text-transform:uppercase; letter-spacing:.08em; transition:all .2s;
+}
+nav.tabbar button .ic{font-size:1.25rem; line-height:1}
+nav.tabbar button.on{color:var(--accent); background:#8fe3f70e}
+body[data-car="xc60"] nav.tabbar button.on{background:#ffc4630e}
+
+/* ---------- panels ---------- */
+.panel{
+  background:linear-gradient(180deg,var(--panel2),var(--panel));
+  border:1px solid var(--line2); border-radius:var(--radius);
+  padding:12px; margin-top:12px;
+  box-shadow:0 10px 30px #0007, inset 0 1px 0 #ffffff09;
+}
+.panelTitle{
+  font-family:'Chakra Petch'; font-size:.66rem; font-weight:600; color:var(--dim);
+  text-transform:uppercase; letter-spacing:.18em; margin:0 0 8px;
+  display:flex; align-items:center; gap:8px;
+}
+.panelTitle::after{content:""; flex:1; height:1px; background:linear-gradient(90deg,var(--line2),transparent)}
+
+/* ---------- mode segment ---------- */
+.seg{display:flex; background:var(--inset); border:1px solid var(--line2); border-radius:12px; padding:3px; gap:3px; margin-top:12px}
+.seg button{
+  flex:1; padding:10px; border-radius:9px; font-family:'Chakra Petch'; font-weight:600;
+  font-size:.78rem; color:var(--mut); letter-spacing:.06em; text-transform:uppercase; transition:all .25s;
+}
+.seg button.on{background:var(--panel2); color:var(--ink); box-shadow:0 2px 10px #0006, inset 0 0 0 1px var(--line2)}
+.seg button.on.drillOn{color:var(--yellow)}
+
+/* ---------- instrument cluster ---------- */
+.cluster{display:flex; gap:12px; align-items:stretch}
+.telltales{
+  flex:1; display:grid; grid-template-columns:repeat(4,1fr); gap:6px; align-content:center;
+}
+.tl{
+  display:grid; place-items:center; aspect-ratio:1.5; border-radius:9px;
+  background:var(--inset); border:1px solid #1b2735; opacity:.95; position:relative;
+}
+.tl svg{width:26px; height:26px; opacity:.16; transition:opacity .15s; fill:none; stroke:#9ab; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round}
+.tl.lit svg{opacity:1; filter:drop-shadow(0 0 7px currentColor)}
+.tl.lit{border-color:#2c3e54}
+.tl[data-c="green"].lit svg{stroke:var(--green); color:var(--green)}
+.tl[data-c="blue"].lit svg{stroke:var(--blue); color:var(--blue)}
+.tl[data-c="amber"].lit svg{stroke:var(--amber); color:var(--amber)}
+.tl[data-c="white"].lit svg{stroke:#e8f4ff; color:#cfe9ff}
+.tl .fillpart{fill:currentColor; stroke:none; opacity:0}
+.tl.lit .fillpart{opacity:1}
+
+.screenWrap{display:flex; flex-direction:column; gap:6px; align-items:center}
+.windscreen{
+  width:150px; height:84px; position:relative; overflow:hidden;
+  background:linear-gradient(180deg,#0e2233,#091420 70%);
+  border:1px solid var(--line2); border-radius:14px 14px 7px 7px;
+  clip-path:polygon(8% 0,92% 0,100% 100%,0 100%);
+}
+.windscreen .horizon{position:absolute; left:0; right:0; top:54%; height:1px; background:#27445d}
+.blade{
+  position:absolute; bottom:-4px; width:3px; height:62px; border-radius:3px;
+  background:linear-gradient(180deg,#cfe3f2,#6e8499); transform-origin:50% 100%;
+  transform:rotate(58deg); transition:transform .5s;
+}
+.blade.b1{left:44px}.blade.b2{left:104px}
+@keyframes sweep{0%{transform:rotate(58deg)}50%{transform:rotate(-58deg)}100%{transform:rotate(58deg)}}
+.windscreen.w1 .blade{animation:sweep var(--swp,4s) ease-in-out infinite}
+.windscreen.w2 .blade{animation:sweep 1.7s ease-in-out infinite}
+.windscreen.w3 .blade{animation:sweep .85s ease-in-out infinite}
+.windscreen.single .blade{animation:sweep 1.3s ease-in-out 1}
+.drop{position:absolute; width:3px; height:3px; border-radius:50%; background:#7fd4e8aa; animation:fall 1.6s linear infinite}
+@keyframes fall{from{transform:translateY(-8px)}to{transform:translateY(90px); opacity:0}}
+.spray{position:absolute; left:0; right:0; top:6px; text-align:center; font-size:.7rem; color:var(--ice); opacity:0; transition:opacity .2s; letter-spacing:3px}
+.windscreen.washing .spray{opacity:1}
+.rearwin{
+  width:64px; height:34px; position:relative; overflow:hidden;
+  background:linear-gradient(180deg,#0e2233,#091420); border:1px solid var(--line2);
+  border-radius:7px 7px 10px 10px; clip-path:polygon(0 0,100% 0,90% 100%,10% 100%);
+}
+.rearwin .blade{height:26px; width:2.5px; left:30px; bottom:-2px}
+.rearwin.w1 .blade{animation:sweep 3.4s ease-in-out infinite}
+.rearwin.w2 .blade{animation:sweep 1.4s ease-in-out infinite}
+.rearwin.washing::after{content:"···"; position:absolute; top:0; left:0; right:0; text-align:center; color:var(--ice); font-size:.65rem; letter-spacing:2px}
+.screenWrap small{color:var(--dim); font-size:.6rem; font-family:'Chakra Petch'; text-transform:uppercase; letter-spacing:.12em}
+
+.statusline{
+  margin-top:10px; padding:8px 10px; border-radius:9px; background:var(--inset);
+  border:1px solid #1b2735; font-family:'Chakra Petch'; font-size:.72rem; color:var(--mut);
+  letter-spacing:.04em; min-height:34px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;
+}
+.statusline b{color:var(--ink); font-weight:600}
+
+/* ---------- stalks ---------- */
+.stalksGrid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px}
+@media(max-width:560px){.stalksGrid{grid-template-columns:1fr}}
+.stalkPanel{position:relative}
+.stalkPanel .lbl-sv{color:var(--dim); font-size:.62rem; letter-spacing:.04em; text-transform:none}
+
+.stalkStage{
+  position:relative; height:148px; border-radius:11px; background:var(--inset);
+  border:1px solid #1b2735; overflow:hidden; margin-bottom:10px;
+}
+.column{
+  position:absolute; top:50%; width:54px; height:120px; transform:translateY(-50%);
+  background:linear-gradient(90deg,#1d2937,#141d28); border:1px solid var(--line2);
+}
+.stalkStage.left .column{right:-1px; border-radius:14px 0 0 14px}
+.stalkStage.right .column{left:-1px; border-radius:0 14px 14px 0}
+.lever{
+  position:absolute; top:50%; height:22px; width:120px; margin-top:-11px;
+  background:linear-gradient(180deg,#3a4a5d,#222e3c);
+  border:1px solid #46596f; border-radius:11px;
+  transition:transform .22s cubic-bezier(.34,1.56,.64,1);
+  display:flex; align-items:center;
+  box-shadow:0 4px 10px #0008;
+}
+.stalkStage.left .lever{right:46px; transform-origin:100% 50%; padding-left:8px}
+.stalkStage.right .lever{left:46px; transform-origin:0% 50%; justify-content:flex-end; padding-right:8px}
+.lever .ringband{
+  font-family:'Chakra Petch'; font-size:.6rem; font-weight:700; color:var(--ice);
+  background:#0d1722; border:1px solid #2c4254; border-radius:7px; padding:2px 7px; letter-spacing:.05em;
+}
+.lever .wheelband{
+  font-family:'Chakra Petch'; font-size:.6rem; font-weight:700; color:var(--amber);
+  background:#0d1722; border:1px solid #41342a; border-radius:7px; padding:2px 7px; letter-spacing:.05em;
+}
+.tapzone{
+  position:absolute; left:0; width:calc(100% - 54px); height:44px; z-index:5;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--dim); font-size:.95rem; border-radius:9px;
+  transition:background .15s, color .15s;
+}
+.stalkStage.right .tapzone{left:54px}
+.tapzone:active{background:#8fe3f714; color:var(--accent)}
+.tapzone.up{top:6px}.tapzone.dn{bottom:6px}
+.tapzone span{
+  font-family:'Chakra Petch'; font-size:.58rem; letter-spacing:.1em; text-transform:uppercase;
+  margin:0 6px; opacity:.8;
+}
+.zoneFlash{animation:zflash .5s}
+@keyframes zflash{0%{background:#41e07d33}100%{background:transparent}}
+
+.btnrow{display:flex; flex-wrap:wrap; gap:7px}
+.cbtn{
+  flex:1 1 auto; min-height:var(--tap); padding:8px 10px; border-radius:11px;
+  background:linear-gradient(180deg,#1b2837,#15202c); border:1px solid var(--line2);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
+  transition:all .15s; min-width:70px;
+}
+.cbtn:active{transform:translateY(1px); filter:brightness(1.25)}
+.cbtn .t{font-family:'Chakra Petch'; font-weight:600; font-size:.72rem; letter-spacing:.05em}
+.cbtn .s{font-size:.6rem; color:var(--dim)}
+.cbtn.on{border-color:var(--accent); box-shadow:0 0 12px #8fe3f72e, inset 0 0 0 1px var(--accent)}
+body[data-car="xc60"] .cbtn.on{box-shadow:0 0 12px #ffc4632e}
+.cbtn.on .t{color:var(--accent)}
+.cbtn[disabled]{opacity:.38; pointer-events:none}
+.cbtn.mini{flex:0 0 auto; min-width:54px}
+
+.wheelrow{display:flex; align-items:center; gap:8px; flex:1 1 100%}
+.wheelrow .cbtn{flex:0 0 auto}
+.wheelrow .sensval{
+  font-family:'Chakra Petch'; font-size:.7rem; color:var(--mut); letter-spacing:.1em; flex:1; text-align:center;
+}
+.sensbar{display:flex; gap:3px; justify-content:center; margin-top:3px}
+.sensbar i{width:9px; height:4px; border-radius:2px; background:#22324433}
+.sensbar i.on{background:var(--accent)}
+
+.hintline{margin-top:9px; font-size:.68rem; color:var(--dim); line-height:1.5}
+.kbd{display:inline-block; padding:0 5px; border:1px solid var(--line2); border-bottom-width:2px; border-radius:4px; font-family:'Chakra Petch'; font-size:.62rem; background:var(--inset); color:var(--mut)}
+.kbHints{display:none}
+@media(hover:hover) and (pointer:fine){.kbHints{display:block}}
+
+/* ---------- toast ---------- */
+#toast{
+  position:fixed; left:50%; bottom:calc(96px + var(--safe-b)); transform:translateX(-50%) translateY(20px);
+  background:#142233ee; border:1px solid var(--line2); color:var(--ink);
+  padding:10px 16px; border-radius:12px; font-size:.8rem; z-index:90;
+  opacity:0; pointer-events:none; transition:all .25s; max-width:86vw; text-align:center;
+  box-shadow:0 10px 30px #000a;
+}
+#toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+
+/* ---------- drill ---------- */
+.drillCard{
+  border:1px solid #5a4d22; background:linear-gradient(180deg,#1d1b10,#15140d);
+  border-radius:var(--radius); padding:14px; margin-top:12px; position:relative; overflow:hidden;
+}
+.drillCard::before{content:""; position:absolute; inset:0 auto 0 0; width:4px; background:var(--yellow)}
+.drillTop{display:flex; align-items:center; gap:8px; margin-bottom:6px}
+.examTag{
+  font-family:'Chakra Petch'; font-size:.6rem; font-weight:700; letter-spacing:.16em;
+  color:#0d0c06; background:var(--yellow); border-radius:5px; padding:3px 8px; text-transform:uppercase;
+}
+.drillScore{margin-left:auto; font-family:'Chakra Petch'; font-size:.72rem; color:var(--mut)}
+.drillScore b{color:var(--yellow)}
+.drillCmd{font-size:1.06rem; font-weight:600; margin:2px 0}
+.drillSv{color:var(--mut); font-size:.8rem; font-style:italic}
+.drillBtns{display:flex; gap:8px; margin-top:11px}
+.drillBtns button{
+  padding:8px 14px; border-radius:9px; border:1px solid var(--line2); background:var(--inset);
+  font-size:.74rem; color:var(--mut); font-family:'Chakra Petch'; letter-spacing:.05em;
+}
+.drillHow{margin-top:9px; font-size:.76rem; color:var(--ice); display:none}
+.drillCard.showHow .drillHow{display:block}
+.drillCard.ok{animation:okflash .9s}
+@keyframes okflash{0%{box-shadow:0 0 0 2px var(--green), 0 0 30px #41e07d66}100%{box-shadow:none}}
+.drillDone{text-align:center; padding:18px 8px}
+.drillDone .big{font-family:'Chakra Petch'; font-size:2.4rem; font-weight:700; color:var(--yellow)}
+.progressBits{display:flex; gap:4px; margin-top:12px}
+.progressBits i{flex:1; height:4px; border-radius:2px; background:#2a3a4e55}
+.progressBits i.ok{background:var(--green)}
+.progressBits i.skip{background:#5a4d22}
+
+/* ---------- study cards ---------- */
+.intro{color:var(--mut); font-size:.84rem; margin-top:12px; line-height:1.55}
+.intro b{color:var(--ink)}
+.catHead{
+  margin:18px 0 4px; font-size:.95rem; color:var(--accent); display:flex; gap:8px; align-items:baseline;
+}
+.catHead small{color:var(--dim); font-size:.68rem; font-style:italic; font-family:'Schibsted Grotesk'}
+details.check{
+  background:linear-gradient(180deg,var(--panel2),var(--panel));
+  border:1px solid var(--line2); border-radius:12px; margin-top:8px; overflow:hidden;
+}
+details.check summary{
+  list-style:none; display:flex; align-items:center; gap:10px; padding:13px 14px; cursor:pointer;
+}
+details.check summary::-webkit-details-marker{display:none}
+details.check summary .sv{
+  font-family:'Chakra Petch'; font-weight:600; font-size:.86rem; color:var(--ink); letter-spacing:.02em;
+}
+details.check summary .en{color:var(--mut); font-size:.74rem; margin-left:auto; text-align:right}
+details.check summary .chev{color:var(--dim); transition:transform .25s; font-size:.7rem}
+details.check[open] summary .chev{transform:rotate(90deg)}
+details.check .body{padding:0 14px 14px; border-top:1px dashed #22304266}
+details.check ol{margin:10px 0 0; padding-left:20px; font-size:.82rem; color:#c6d4e2}
+details.check ol li{margin:5px 0}
+details.check ol li b{color:var(--ink)}
+.carnote{
+  margin-top:9px; padding:8px 10px; border-radius:9px; font-size:.76rem; line-height:1.5;
+  border:1px solid; display:flex; gap:8px; align-items:flex-start;
+}
+.carnote.xc40{border-color:#1d4854; background:#0d2129; color:#aee2ef}
+.carnote.xc60{border-color:#4f3d1d; background:#211a0d; color:#f1d6a3}
+.carnote .chip{
+  flex:0 0 auto; font-family:'Chakra Petch'; font-weight:700; font-size:.58rem; letter-spacing:.08em;
+  border-radius:4px; padding:2px 6px; margin-top:1px;
+}
+.carnote.xc40 .chip{background:#8fe3f7; color:#06222b}
+.carnote.xc60 .chip{background:#ffc463; color:#211a07}
+.warnnote{
+  margin-top:9px; padding:8px 10px; border-radius:9px; font-size:.76rem;
+  border:1px solid #5c2a2a; background:#1d0f0f; color:#f3b9b9;
+}
+
+/* ---------- quiz ---------- */
+.quizStart{text-align:center; padding:30px 14px}
+.quizStart .disp{font-size:1.5rem; margin:0 0 6px}
+.quizStart p{color:var(--mut); font-size:.84rem; max-width:420px; margin:0 auto 20px}
+.bigBtn{
+  display:inline-block; padding:14px 30px; border-radius:99px;
+  background:var(--accent); color:#06222b; font-family:'Chakra Petch'; font-weight:700;
+  font-size:.9rem; letter-spacing:.08em; text-transform:uppercase;
+  box-shadow:0 6px 24px #8fe3f73d; transition:transform .15s;
+}
+body[data-car="xc60"] .bigBtn{color:#241a05; box-shadow:0 6px 24px #ffc4633d}
+.bigBtn:active{transform:scale(.96)}
+.qMeta{display:flex; align-items:center; gap:8px; font-family:'Chakra Petch'; font-size:.7rem; color:var(--dim); letter-spacing:.1em}
+.qMeta .qchip{border:1px solid var(--line2); border-radius:5px; padding:2px 7px; color:var(--mut)}
+.qMeta .score{margin-left:auto}
+.qText{font-size:1.02rem; font-weight:600; margin:10px 0 4px}
+.qSv{color:var(--dim); font-size:.76rem; font-style:italic; margin-bottom:12px}
+.opt{
+  display:flex; gap:10px; align-items:flex-start; width:100%; text-align:left;
+  padding:12px 13px; border-radius:11px; border:1px solid var(--line2);
+  background:var(--inset); margin-top:8px; font-size:.85rem; line-height:1.45; color:#cfdae6;
+  transition:all .15s;
+}
+.opt .key{
+  flex:0 0 22px; height:22px; border-radius:6px; display:grid; place-items:center;
+  font-family:'Chakra Petch'; font-size:.66rem; font-weight:700; color:var(--dim);
+  border:1px solid var(--line2); margin-top:1px;
+}
+.opt:active{filter:brightness(1.3)}
+.opt.correct{border-color:var(--green); background:#0d2316; color:#c9f4d8}
+.opt.correct .key{background:var(--green); color:#062812; border-color:var(--green)}
+.opt.wrong{border-color:var(--red); background:#241011; color:#f4c9c9}
+.opt.wrong .key{background:var(--red); color:#2b0707; border-color:var(--red)}
+.opt.faded{opacity:.45}
+.qWhy{
+  margin-top:12px; padding:11px 13px; border-radius:11px; background:#10202b;
+  border:1px solid #1d4854; font-size:.8rem; color:#bfe4ef; display:none; line-height:1.55;
+}
+.qWhy b{color:var(--ice)}
+.qNext{margin-top:13px; width:100%; padding:13px; border-radius:11px; display:none;
+  background:var(--panel2); border:1px solid var(--line2); font-family:'Chakra Petch';
+  font-weight:600; letter-spacing:.08em; font-size:.8rem; color:var(--ink); text-transform:uppercase}
+.quizEnd{text-align:center; padding:26px 10px}
+.quizEnd .big{font-family:'Chakra Petch'; font-size:3rem; font-weight:700; color:var(--accent)}
+.quizEnd p{color:var(--mut); font-size:.84rem}
+
+footer{
+  margin-top:26px; color:var(--dim); font-size:.66rem; text-align:center; line-height:1.6; padding:0 8px;
+}
+footer a{color:var(--mut)}
+</style>
+</head>
+<body data-car="xc40">
+
+<header>
+  <div class="brand">
+    <h1>Körprov <em>Cockpit</em></h1>
+    <small>Volvo stalk &amp; säkerhetskontroll trainer</small>
+  </div>
+  <div class="carSwitch" role="tablist" aria-label="Car model">
+    <button id="carXc40" class="on">XC40 ⚡ EV</button>
+    <button id="carXc60">XC60 T8 PHEV</button>
+  </div>
+  <button class="iconBtn on" id="sndBtn" aria-label="Toggle sound">♪</button>
+</header>
+
+<main>
+
+<!-- ============ COCKPIT TAB ============ -->
+<section class="tabpane on" id="pane-cockpit">
+
+  <div class="seg">
+    <button id="modeFree" class="on">🕹 Free practice</button>
+    <button id="modeDrill">👮 Examiner drill</button>
+  </div>
+
+  <div class="drillCard" id="drillCard" style="display:none">
+    <div id="drillLive">
+      <div class="drillTop">
+        <span class="examTag">Examiner says</span>
+        <span class="drillScore">Score <b id="dScore">0</b> · Streak <b id="dStreak">0</b></span>
+      </div>
+      <div class="drillCmd" id="dCmd">—</div>
+      <div class="drillSv" id="dSv"></div>
+      <div class="drillHow" id="dHow"></div>
+      <div class="drillBtns">
+        <button id="dHintBtn">💡 Hint</button>
+        <button id="dSkipBtn">Skip →</button>
+      </div>
+      <div class="progressBits" id="dBits"></div>
+    </div>
+    <div class="drillDone" id="drillDone" style="display:none">
+      <div class="big" id="dFinal">0</div>
+      <p style="color:var(--mut);font-size:.82rem" id="dVerdict"></p>
+      <button class="bigBtn" id="dAgain">New round</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <p class="panelTitle">Instrument cluster · färddator</p>
+    <div class="cluster">
+      <div class="telltales">
+        <div class="tl" id="tlLeft" data-c="green" title="Left indicator">
+          <svg viewBox="0 0 24 24"><path class="fillpart" d="M11 5 3 12l8 7v-4h7v-6h-7z"/><path d="M11 5 3 12l8 7v-4h7v-6h-7z"/></svg>
+        </div>
+        <div class="tl" id="tlRight" data-c="green" title="Right indicator">
+          <svg viewBox="0 0 24 24"><path class="fillpart" d="M13 5l8 7-8 7v-4H6v-6h7z"/><path d="M13 5l8 7-8 7v-4H6v-6h7z"/></svg>
+        </div>
+        <div class="tl" id="tlLow" data-c="green" title="Low beam (halvljus)">
+          <svg viewBox="0 0 24 24"><path d="M9 7c4 0 6 2.2 6 5s-2 5-6 5c-2.5 0-4-2.2-4-5s1.5-5 4-5z"/><path d="M17 8.5l4-1M17 12h4M17 15.5l4 1"/></svg>
+        </div>
+        <div class="tl" id="tlHigh" data-c="blue" title="High beam (helljus)">
+          <svg viewBox="0 0 24 24"><path d="M9 7c4 0 6 2.2 6 5s-2 5-6 5c-2.5 0-4-2.2-4-5s1.5-5 4-5z"/><path d="M17 8h4M17 10.7h4M17 13.4h4M17 16h4"/></svg>
+        </div>
+        <div class="tl" id="tlPos" data-c="green" title="Position lamps (parkeringsljus)">
+          <svg viewBox="0 0 24 24"><path d="M10 9.5 6.5 8M10 12H6M10 14.5 6.5 16M14 9.5 17.5 8M14 12h4M14 14.5l3.5 1.5"/><path d="M12 8.5c1.4 0 2.2 1.6 2.2 3.5s-.8 3.5-2.2 3.5-2.2-1.6-2.2-3.5.8-3.5 2.2-3.5z"/></svg>
+        </div>
+        <div class="tl" id="tlAhb" data-c="white" title="Active high beam (AHB)">
+          <svg viewBox="0 0 24 24"><path d="M9 7c4 0 6 2.2 6 5s-2 5-6 5c-2.5 0-4-2.2-4-5s1.5-5 4-5z"/><path d="M17 8h4M17 12h4M17 16h4"/><text x="7" y="14.5" font-size="7" fill="currentColor" stroke="none" font-family="Chakra Petch">A</text></svg>
+        </div>
+        <div class="tl" id="tlFogR" data-c="amber" title="Rear fog (dimbakljus)">
+          <svg viewBox="0 0 24 24"><path d="M15 7c-4 0-6 2.2-6 5s2 5 6 5c2.5 0 4-2.2 4-5s-1.5-5-4-5z"/><path d="M7 8.5H3M7 12H3M7 15.5H3"/><path d="M5 6.5v11" stroke-dasharray="2 2"/></svg>
+        </div>
+        <div class="tl" id="tlPark" data-c="amber" title="Rain sensor active">
+          <svg viewBox="0 0 24 24"><path d="M12 4c2.5 3.5 5 6.2 5 9a5 5 0 0 1-10 0c0-2.8 2.5-5.5 5-9z"/><path d="M9.5 13.5a2.5 2.5 0 0 0 2.5 2.5"/></svg>
+        </div>
+      </div>
+      <div class="screenWrap">
+        <div class="windscreen" id="ws">
+          <div class="horizon"></div>
+          <div class="spray">· · ·</div>
+          <div class="blade b1"></div><div class="blade b2"></div>
+        </div>
+        <div class="rearwin" id="rw"><div class="blade"></div></div>
+        <small>vindruta · bakruta</small>
+      </div>
+    </div>
+    <div class="statusline" id="statusline"></div>
+  </div>
+
+  <div class="stalksGrid">
+
+    <!-- LEFT STALK -->
+    <div class="panel stalkPanel">
+      <p class="panelTitle">Left stalk — lights &amp; indicators <span class="lbl-sv">· ljus &amp; blinkers</span></p>
+      <div class="stalkStage left">
+        <div class="column"></div>
+        <div class="lever" id="leverL">
+          <span class="ringband" id="ringBand">AUTO</span>
+        </div>
+        <button class="tapzone up" id="zL-up"><span>tap = 3 blinks · hold = latch</span>▲ RIGHT</button>
+        <button class="tapzone dn" id="zL-dn">▼ LEFT <span>blinkers vänster</span></button>
+      </div>
+      <div class="btnrow">
+        <button class="cbtn" id="bRing">
+          <span class="t" id="bRingT">Ring: AUTO</span><span class="s">rotate collar · O / AUTO / halvljus</span>
+        </button>
+        <button class="cbtn" id="bPush"><span class="t">⇡ Push fwd</span><span class="s">helljus ON</span></button>
+        <button class="cbtn" id="bPull"><span class="t">⇣ Pull</span><span class="s">flash / helljus OFF</span></button>
+        <button class="cbtn mini" id="bAhb"><span class="t">AHB</span><span class="s">auto helljus</span></button>
+        <button class="cbtn mini" id="bFogR"><span class="t">Rear fog</span><span class="s">dimbakljus</span></button>
+      </div>
+      <p class="hintline">Stalk <b>up = right</b>, <b>down = left</b> (it follows the wheel). Light tap → 3 “lane-change” blinks; hold → latched until you cancel. High beam needs the collar in <b>AUTO</b> or <b>halvljus</b>.
+      <span class="kbHints">Keys: <span class="kbd">↑</span><span class="kbd">↓</span> tap · <span class="kbd">Shift+↑/↓</span> latch · <span class="kbd">H</span> push · <span class="kbd">F</span> pull · <span class="kbd">R</span> ring</span></p>
+    </div>
+
+    <!-- RIGHT STALK -->
+    <div class="panel stalkPanel">
+      <p class="panelTitle">Right stalk — wipers &amp; washers <span class="lbl-sv">· torkare &amp; spolare</span></p>
+      <div class="stalkStage right">
+        <div class="column"></div>
+        <div class="lever" id="leverR">
+          <span class="wheelband" id="wipeBand">OFF</span>
+        </div>
+        <button class="tapzone up" id="zR-up">▲ MORE <span>int → normal → fast</span></button>
+        <button class="tapzone dn" id="zR-dn"><span>below OFF = single sweep</span>▼ LESS</button>
+      </div>
+      <div class="btnrow">
+        <button class="cbtn" id="bWashF"><span class="t">⇣ Pull = wash</span><span class="s">spola vindrutan</span></button>
+        <button class="cbtn" id="bWashR"><span class="t">⇡ Push = rear wash</span><span class="s">spola bakrutan</span></button>
+        <button class="cbtn mini" id="bRain"><span class="t">☂ Sensor</span><span class="s">regnsensor</span></button>
+        <button class="cbtn mini" id="bRearInt"><span class="t">Rear INT</span><span class="s">bakruta</span></button>
+        <button class="cbtn mini" id="bRearOn"><span class="t">Rear ON</span><span class="s">kontinuerlig</span></button>
+        <div class="wheelrow">
+          <button class="cbtn mini" id="bSensDn"><span class="t">−</span><span class="s">thumbwheel</span></button>
+          <div class="sensval">RAIN-SENSOR SENSITIVITY<div class="sensbar" id="sensBar"></div></div>
+          <button class="cbtn mini" id="bSensUp"><span class="t">+</span><span class="s">känslighet</span></button>
+        </div>
+      </div>
+      <p class="hintline">One notch <b>down</b> past OFF = single sweep. Up through <b>INT/AUTO → normal → fast</b>. With the <b>☂ sensor</b> lit, the INT position wipes automatically — thumbwheel sets sensitivity. <b>Pull</b> = windscreen wash, <b>push away</b> = rear wash. Reverse gear auto-wipes the rear in the real car.
+      <span class="kbHints">Keys: <span class="kbd">W</span>/<span class="kbd">S</span> up/down · <span class="kbd">X</span> sweep · <span class="kbd">V</span> wash · <span class="kbd">B</span> rear wash · <span class="kbd">A</span> sensor</span></p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============ CHECKS TAB ============ -->
+<section class="tabpane" id="pane-checks">
+  <p class="intro">At the start of the Swedish practical test (<b>körprov B</b>) the examiner spends ~3–5 minutes on a <b>säkerhetskontroll</b> — usually <b>1–3 questions</b> from: inside the car, outside the car, and under the bonnet. You must <i>show and explain</i>, not recite. If you find a fault, say <b>what you'd do about it</b> (top up / replace / don't drive — verkstad).</p>
+  <div id="checksList"></div>
+</section>
+
+<!-- ============ QUIZ TAB ============ -->
+<section class="tabpane" id="pane-quiz">
+  <div class="panel quizStart" id="quizStart">
+    <h2 class="disp">Säkerhetskontroll quiz</h2>
+    <p>Examiner-style questions on brakes, fluids, lights, tyres and the quirks of your <span id="qCarName">XC40 Recharge</span>. Answers explain the <i>why</i> — that's what the examiner listens for.</p>
+    <button class="bigBtn" id="quizGo">Start quiz</button>
+  </div>
+  <div class="panel" id="quizPlay" style="display:none">
+    <div class="qMeta">
+      <span id="qNum">1/15</span><span class="qchip" id="qCat">brakes</span>
+      <span class="score">✔ <span id="qScore">0</span></span>
+    </div>
+    <div class="qText" id="qText"></div>
+    <div class="qSv" id="qSvText"></div>
+    <div id="qOpts"></div>
+    <div class="qWhy" id="qWhy"></div>
+    <button class="qNext" id="qNext">Next question →</button>
+  </div>
+  <div class="panel quizEnd" id="quizEnd" style="display:none">
+    <div class="big" id="qFinal">0/15</div>
+    <p id="qFinalMsg"></p>
+    <button class="bigBtn" id="quizAgain">Try again</button>
+  </div>
+</section>
+
+<footer>
+  Unofficial practice aid for the Swedish körprov B · controls modelled on Volvo XC40 Recharge (CMA) &amp; XC60 Recharge T8 (SPA) — always verify against your driving-school car.<br>
+  Sources: Trafikverket körprov B · Volvo Cars support manuals. Lycka till! 🇸🇪
+</footer>
+
+</main>
+
+<nav class="tabbar">
+  <button class="on" data-tab="cockpit"><span class="ic">🕹</span>Stalks</button>
+  <button data-tab="checks"><span class="ic">🔧</span>Checks</button>
+  <button data-tab="quiz"><span class="ic">❓</span>Quiz</button>
+</nav>
+
+<div id="toast"></div>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+
+/* ================= STATE ================= */
+const S = {
+  car:'xc40', sound:true, mode:'free',
+  ring:'AUTO', ahb:false,
+  indicator:'off', indLatched:false, blinksLeft:0,
+  highBeam:false,
+  fogRear:false,
+  wiper:0, rainSensor:false, sens:3,
+  rearWiper:'off',
+};
+const RING_ORDER = ['O','AUTO','LOW'];
+const RING_LABEL = {O:'O · position', AUTO:'AUTO', LOW:'halvljus'};
+const WIPE_LABEL = ['OFF','INT/AUTO','NORMAL','FAST'];
+
+/* ================= AUDIO ================= */
+let AC=null;
+function beep(freq=880, dur=0.05, gain=0.05, type='square'){
+  if(!S.sound) return;
+  try{
+    AC = AC || new (window.AudioContext||window.webkitAudioContext)();
+    if(AC.state==='suspended') AC.resume();
+    const o=AC.createOscillator(), g=AC.createGain();
+    o.type=type; o.frequency.value=freq;
+    g.gain.setValueAtTime(gain,AC.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001,AC.currentTime+dur);
+    o.connect(g).connect(AC.destination);
+    o.start(); o.stop(AC.currentTime+dur);
+  }catch(e){}
+}
+const tick = on => beep(on?1245:830, .035, .045, 'square');
+const okSound = ()=>{beep(740,.09,.06,'sine'); setTimeout(()=>beep(1110,.14,.06,'sine'),90)};
+const errSound = ()=>beep(220,.18,.06,'sawtooth');
+
+/* ================= TOAST ================= */
+let toastT=null;
+function toast(msg){
+  const t=$('toast'); t.innerHTML=msg; t.classList.add('show');
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+/* ================= BLINKER ENGINE ================= */
+let blinkTimer=null, blinkPhase=false;
+function startBlink(){
+  stopBlink();
+  blinkPhase=false;
+  blinkTimer=setInterval(()=>{
+    blinkPhase=!blinkPhase;
+    tick(blinkPhase);
+    if(!blinkPhase && !S.indLatched){
+      S.blinksLeft--;
+      if(S.blinksLeft<=0){ S.indicator='off'; stopBlink(); render(); return; }
+    }
+    renderTelltales();
+  },380);
+}
+function stopBlink(){ clearInterval(blinkTimer); blinkTimer=null; blinkPhase=false; renderTelltales(); }
+
+function setIndicator(dir, latch){
+  if(S.indicator===dir && S.indLatched){ /* same direction again cancels a latched indicator */
+    S.indicator='off'; S.indLatched=false; stopBlink();
+    act('ind-cancel'); render(); return;
+  }
+  S.indicator=dir;
+  S.indLatched=!!latch;
+  S.blinksLeft=latch?Infinity:3;
+  startBlink();
+  flashZone(dir==='right'?'zL-up':'zL-dn');
+  act(latch?('ind-'+dir+'-latch'):('ind-'+dir+'-3'));
+  render();
+}
+
+/* ================= ACTIONS / RENDER ================= */
+function lowBeamActive(){ return S.ring==='LOW' || S.ring==='AUTO'; } /* AUTO modelled as dipped beam on */
+
+function render(){
+  /* lever rotations */
+  const lv=$('leverL');
+  let rot=0;
+  if(S.indicator==='right') rot=-13;
+  if(S.indicator==='left') rot=13;
+  lv.style.transform=`rotate(${rot}deg)`;
+  $('ringBand').textContent = S.ring==='O'?'O':(S.ring==='AUTO'?'AUTO':'☼');
+  $('bRingT').textContent = 'Ring: '+RING_LABEL[S.ring];
+
+  const rv=$('leverR');
+  rv.style.transform=`rotate(${[0,-8,-15,-22][S.wiper]}deg)`;
+  $('wipeBand').textContent = S.wiper===1 ? (S.rainSensor?'AUTO':'INT') : WIPE_LABEL[S.wiper];
+
+  /* buttons */
+  $('bAhb').classList.toggle('on', S.ahb);
+  $('bAhb').toggleAttribute('disabled', S.ring!=='AUTO');
+  $('bFogR').classList.toggle('on', S.fogRear);
+  $('bRain').classList.toggle('on', S.rainSensor);
+  $('bRearInt').classList.toggle('on', S.rearWiper==='int');
+  $('bRearOn').classList.toggle('on', S.rearWiper==='cont');
+  const sb=$('sensBar'); sb.innerHTML='';
+  for(let i=1;i<=5;i++){const b=document.createElement('i'); if(i<=S.sens)b.classList.add('on'); sb.appendChild(b);}
+
+  /* windscreen animation */
+  const ws=$('ws');
+  ws.classList.remove('w1','w2','w3');
+  if(S.wiper===1){ ws.classList.add('w1'); ws.style.setProperty('--swp',(6.5-S.sens)+'s'); }
+  if(S.wiper===2) ws.classList.add('w2');
+  if(S.wiper===3) ws.classList.add('w3');
+  /* raindrops when sensor mode */
+  ws.querySelectorAll('.drop').forEach(d=>d.remove());
+  if(S.wiper===1 && S.rainSensor){
+    for(let i=0;i<7;i++){
+      const d=document.createElement('div'); d.className='drop';
+      d.style.left=(8+Math.random()*84)+'%';
+      d.style.animationDelay=(Math.random()*1.6)+'s';
+      ws.appendChild(d);
+    }
+  }
+  const rw=$('rw');
+  rw.classList.remove('w1','w2');
+  if(S.rearWiper==='int') rw.classList.add('w1');
+  if(S.rearWiper==='cont') rw.classList.add('w2');
+
+  renderTelltales();
+  renderStatus();
+}
+
+function renderTelltales(){
+  $('tlLeft').classList.toggle('lit', S.indicator==='left' && blinkPhase);
+  $('tlRight').classList.toggle('lit', S.indicator==='right' && blinkPhase);
+  $('tlLow').classList.toggle('lit', lowBeamActive());
+  $('tlPos').classList.toggle('lit', S.ring==='O');
+  $('tlHigh').classList.toggle('lit', S.highBeam);
+  $('tlAhb').classList.toggle('lit', S.ahb && S.ring==='AUTO');
+  $('tlFogR').classList.toggle('lit', S.fogRear);
+  $('tlPark').classList.toggle('lit', S.wiper===1 && S.rainSensor);
+}
+
+function renderStatus(){
+  const ind = S.indicator==='off' ? 'off' : (S.indicator + (S.indLatched?' (latched)':' ×3'));
+  const wip = S.wiper===0?'off':(S.wiper===1?(S.rainSensor?'rain sensor (sens '+S.sens+')':'intermittent'):WIPE_LABEL[S.wiper].toLowerCase());
+  $('statusline').innerHTML =
+    `LJUS <b>${RING_LABEL[S.ring]}</b>${S.highBeam?' + <b style="color:var(--blue)">HELLJUS</b>':''}${S.ahb&&S.ring==='AUTO'?' + AHB':''}${S.fogRear?' + <b style="color:var(--amber)">dimbak</b>':''}
+     · BLINKERS <b>${ind}</b>
+     · TORKARE <b>${wip}</b>${S.rearWiper!=='off'?' · BAK <b>'+S.rearWiper+'</b>':''}`;
+}
+
+function flashZone(id){ const z=$(id); z.classList.remove('zoneFlash'); void z.offsetWidth; z.classList.add('zoneFlash'); }
+
+/* ================= LEFT STALK HANDLERS ================= */
+function pressHold(el, onTap, onHold){
+  let t=null, held=false;
+  const down=e=>{ e.preventDefault(); held=false; t=setTimeout(()=>{held=true; onHold();},350); };
+  const up=e=>{ e.preventDefault(); clearTimeout(t); if(!held) onTap(); };
+  el.addEventListener('pointerdown',down);
+  el.addEventListener('pointerup',up);
+  el.addEventListener('pointercancel',()=>clearTimeout(t));
+  el.addEventListener('pointerleave',()=>clearTimeout(t));
+}
+pressHold($('zL-up'), ()=>setIndicator('right',false), ()=>setIndicator('right',true));
+pressHold($('zL-dn'), ()=>setIndicator('left',false),  ()=>setIndicator('left',true));
+
+$('bRing').addEventListener('click',()=>{
+  const i=RING_ORDER.indexOf(S.ring);
+  S.ring=RING_ORDER[(i+1)%3];
+  if(S.ring==='O' && S.highBeam){ S.highBeam=false; }
+  if(S.ring!=='AUTO') S.ahb=false;
+  beep(520,.04,.04);
+  act('ring-'+S.ring); render();
+});
+$('bPush').addEventListener('click',()=>{
+  if(!lowBeamActive()){ errSound(); toast('⚠️ Helljus needs the collar in <b>AUTO</b> or <b>halvljus</b> — turn the ring first.'); return; }
+  if(S.highBeam){ toast('Helljus is already on — <b>pull</b> the stalk to switch it off.'); return; }
+  S.highBeam=true; beep(660,.07,.05); act('high-on'); render();
+});
+$('bPull').addEventListener('click',()=>{
+  if(S.highBeam){ S.highBeam=false; beep(440,.06,.05); act('high-off'); render(); return; }
+  /* momentary flash */
+  S.highBeam=true; render(); beep(990,.06,.05);
+  act('flash');
+  setTimeout(()=>{ S.highBeam=false; render(); },550);
+});
+$('bAhb').addEventListener('click',()=>{
+  S.ahb=!S.ahb; beep(700,.05,.04);
+  act(S.ahb?'ahb-on':'ahb-off'); render();
+  if(S.ahb) toast('Active high beam: camera dips automatically for oncoming traffic. (Turn the real collar to the AHB notch — it springs back.)');
+});
+$('bFogR').addEventListener('click',()=>{
+  S.fogRear=!S.fogRear; beep(600,.05,.04);
+  act(S.fogRear?'fogR-on':'fogR-off'); render();
+  if(S.fogRear) toast('Dimbakljus: use only in fog/heavy snow — it dazzles drivers behind.');
+});
+
+/* ================= RIGHT STALK HANDLERS ================= */
+function singleSweep(){
+  if(S.wiper!==0) { wiperTo(S.wiper-1); return; }
+  const ws=$('ws');
+  ws.classList.remove('single'); void ws.offsetWidth; ws.classList.add('single');
+  beep(500,.05,.04);
+  act('sweep');
+  setTimeout(()=>ws.classList.remove('single'),1400);
+}
+function wiperTo(n){
+  S.wiper=Math.max(0,Math.min(3,n));
+  beep(520+S.wiper*60,.04,.04);
+  act('wiper-'+S.wiper); render();
+}
+$('zR-up').addEventListener('pointerdown',e=>{e.preventDefault(); wiperTo(S.wiper+1); flashZone('zR-up');});
+$('zR-dn').addEventListener('pointerdown',e=>{e.preventDefault(); if(S.wiper===0){singleSweep();}else{wiperTo(S.wiper-1);} flashZone('zR-dn');});
+
+$('bRain').addEventListener('click',()=>{
+  S.rainSensor=!S.rainSensor; beep(740,.05,.04);
+  act(S.rainSensor?'rain-on':'rain-off'); render();
+  if(S.rainSensor && S.wiper!==1) toast('Sensor armed — move the stalk to the <b>INT/AUTO</b> position to hand control to the rain sensor.');
+});
+$('bSensUp').addEventListener('click',()=>{ if(S.sens<5){S.sens++; beep(800,.04,.04);} act('sens-up'); render(); });
+$('bSensDn').addEventListener('click',()=>{ if(S.sens>1){S.sens--; beep(600,.04,.04);} act('sens-down'); render(); });
+$('bRearInt').addEventListener('click',()=>{ S.rearWiper=S.rearWiper==='int'?'off':'int'; beep(560,.04,.04); act('rear-'+S.rearWiper); render(); });
+$('bRearOn').addEventListener('click',()=>{ S.rearWiper=S.rearWiper==='cont'?'off':'cont'; beep(640,.04,.04); act('rear-'+S.rearWiper); render(); });
+
+function washFront(){
+  const ws=$('ws');
+  ws.classList.add('washing');
+  const had=S.wiper;
+  if(had===0){ ws.classList.add('w2'); }
+  beep(880,.12,.04,'sine');
+  act('wash-front');
+  setTimeout(()=>{ ws.classList.remove('washing'); if(had===0) ws.classList.remove('w2'); },1900);
+}
+function washRear(){
+  const rw=$('rw');
+  rw.classList.add('washing'); const had=S.rearWiper;
+  if(had==='off') rw.classList.add('w2');
+  beep(820,.12,.04,'sine');
+  act('wash-rear');
+  setTimeout(()=>{ rw.classList.remove('washing'); if(had==='off') rw.classList.remove('w2'); },1900);
+}
+$('bWashF').addEventListener('click',washFront);
+$('bWashR').addEventListener('click',washRear);
+
+/* ================= KEYBOARD ================= */
+document.addEventListener('keydown',e=>{
+  if(e.repeat) return;
+  if(!$('pane-cockpit').classList.contains('on')) return;
+  const k=e.key.toLowerCase();
+  if(e.key==='ArrowUp'){ e.preventDefault(); setIndicator('right',e.shiftKey); }
+  else if(e.key==='ArrowDown'){ e.preventDefault(); setIndicator('left',e.shiftKey); }
+  else if(k==='h') $('bPush').click();
+  else if(k==='f') $('bPull').click();
+  else if(k==='r') $('bRing').click();
+  else if(k==='w') wiperTo(S.wiper+1);
+  else if(k==='s'){ if(S.wiper===0) singleSweep(); else wiperTo(S.wiper-1); }
+  else if(k==='x') singleSweep();
+  else if(k==='v') washFront();
+  else if(k==='b') washRear();
+  else if(k==='a') $('bRain').click();
+});
+
+/* ================= DRILL MODE ================= */
+const TASKS = [
+ {cmd:'Signal a lane change to the RIGHT', sv:'Blinka höger för körfältsbyte', how:'Tap the LEFT stalk gently UP — it springs back, blinks 3 times.', check:(s,a)=>a==='ind-right-3'},
+ {cmd:'Signal a lane change to the LEFT', sv:'Blinka vänster för körfältsbyte', how:'Tap the LEFT stalk gently DOWN — 3 blinks.', check:(s,a)=>a==='ind-left-3'},
+ {cmd:'Indicate RIGHT for a junction (keep it on)', sv:'Blinka höger – håll i', how:'Press & HOLD the up zone to latch the indicator.', check:(s,a)=>a==='ind-right-latch'},
+ {cmd:'Indicate LEFT for a junction (keep it on)', sv:'Blinka vänster – håll i', how:'Press & HOLD the down zone to latch.', check:(s,a)=>a==='ind-left-latch'},
+ {cmd:'Cancel the indicator', sv:'Stäng av blinkersen', how:'Press the same direction again to cancel a latched indicator.', pre:s=>s.indicator!=='off'&&s.indLatched, check:(s,a)=>a==='ind-cancel'||s.indicator==='off'},
+ {cmd:'Turn the high beam ON', sv:'Sätt på helljuset', how:'Collar must be in AUTO or halvljus, then PUSH the stalk forward.', pre:s=>!s.highBeam, check:(s,a)=>a==='high-on'},
+ {cmd:'Switch the high beam OFF', sv:'Stäng av helljuset', how:'PULL the stalk towards you.', pre:s=>s.highBeam, check:(s,a)=>a==='high-off'},
+ {cmd:'Flash the high beam (helljusblink)', sv:'Blinka med helljuset', how:'With high beam off, PULL the stalk briefly.', pre:s=>!s.highBeam, check:(s,a)=>a==='flash'},
+ {cmd:'Select position lamps only', sv:'Parkeringsljus', how:'Rotate the collar to the O position.', pre:s=>s.ring!=='O', check:(s,a)=>s.ring==='O'},
+ {cmd:'Select manual low beam', sv:'Halvljus manuellt', how:'Rotate the collar to the halvljus (☼) position.', pre:s=>s.ring!=='LOW', check:(s,a)=>s.ring==='LOW'},
+ {cmd:'Return the lighting collar to AUTO', sv:'Tillbaka till AUTO-läge', how:'Rotate the collar to AUTO — Volvo recommends leaving it here.', pre:s=>s.ring!=='AUTO', check:(s,a)=>s.ring==='AUTO'},
+ {cmd:'Activate automatic high beam', sv:'Aktivt helljus (AHB)', how:'Collar in AUTO, then the AHB notch (button here).', check:(s,a)=>s.ahb&&s.ring==='AUTO'},
+ {cmd:'Turn on the rear fog light', sv:'Tänd dimbakljuset', how:'Rear fog button on the left stalk.', pre:s=>!s.fogRear, check:(s,a)=>s.fogRear},
+ {cmd:'Give a single wipe of the windscreen', sv:'Ett torkarsvep', how:'Nudge the RIGHT stalk one notch DOWN past OFF.', pre:s=>s.wiper===0, check:(s,a)=>a==='sweep'},
+ {cmd:'Wipers at normal continuous speed', sv:'Torkare – normal hastighet', how:'Move the right stalk UP two notches.', pre:s=>s.wiper!==2, check:(s,a)=>s.wiper===2},
+ {cmd:'Wipers at maximum speed', sv:'Torkare – hög hastighet', how:'Right stalk all the way UP.', pre:s=>s.wiper!==3, check:(s,a)=>s.wiper===3},
+ {cmd:'Hand the wipers to the rain sensor', sv:'Aktivera regnsensorn', how:'Sensor button ON + stalk in the INT/AUTO position.', pre:s=>!(s.wiper===1&&s.rainSensor), check:(s,a)=>s.wiper===1&&s.rainSensor},
+ {cmd:'Increase rain-sensor sensitivity', sv:'Öka regnsensorns känslighet', how:'Roll the thumbwheel up (+).', pre:s=>s.wiper===1&&s.rainSensor&&s.sens<5, check:(s,a)=>a==='sens-up'},
+ {cmd:'Wash the windscreen', sv:'Spola vindrutan', how:'PULL the right stalk towards you.', check:(s,a)=>a==='wash-front'},
+ {cmd:'Wash the rear window', sv:'Spola bakrutan', how:'PUSH the right stalk away from you.', check:(s,a)=>a==='wash-rear'},
+ {cmd:'Rear wiper on intermittent', sv:'Bakrutetorkare – intervall', how:'Rear INT button on the right stalk.', pre:s=>s.rearWiper!=='int', check:(s,a)=>s.rearWiper==='int'},
+ {cmd:'Switch the wipers fully OFF', sv:'Stäng av torkarna', how:'Stalk down to OFF, rear wiper off too.', pre:s=>s.wiper>0||s.rearWiper!=='off', check:(s,a)=>s.wiper===0&&s.rearWiper==='off'},
+];
+const ROUND_LEN = 10;
+let drill = null;
+
+function startDrill(){
+  drill = {queue:[], i:0, score:0, streak:0, results:[]};
+  const pool=[...TASKS];
+  /* shuffle */
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]];}
+  drill.queue=pool;
+  $('drillDone').style.display='none';
+  $('drillLive').style.display='block';
+  nextTask(true);
+  renderDrill();
+}
+function currentTask(){ return drill ? drill.active : null; }
+function nextTask(first){
+  if(!drill) return;
+  if(!first) drill.i++;
+  if(drill.results.length>=ROUND_LEN){ endDrill(); return; }
+  /* find next eligible task */
+  let tries=0;
+  while(tries<drill.queue.length*2){
+    const t=drill.queue[drill.i % drill.queue.length];
+    drill.i = (drill.i+1) % drill.queue.length;
+    const eligible = t.pre ? t.pre(S) : !t.check(S,null);
+    if(eligible && t!==drill.lastTask){ drill.active=t; drill.lastTask=t; break; }
+    tries++;
+  }
+  $('drillCard').classList.remove('showHow');
+  renderDrill();
+}
+function endDrill(){
+  $('drillLive').style.display='none';
+  $('drillDone').style.display='block';
+  const pts=drill.score;
+  $('dFinal').textContent=pts+' p';
+  const okCount=drill.results.filter(r=>r==='ok').length;
+  $('dVerdict').textContent =
+    okCount===ROUND_LEN ? 'Perfect round — godkänd! The examiner nods approvingly. 🟢' :
+    okCount>=7 ? `${okCount}/${ROUND_LEN} correct — nearly there. Re-run the ones you skipped.` :
+    `${okCount}/${ROUND_LEN} correct — spend a few minutes in Free practice, then try again.`;
+  drill.active=null;
+}
+function renderDrill(){
+  if(!drill||!drill.active) return;
+  $('dCmd').textContent='“'+drill.active.cmd+'”';
+  $('dSv').textContent=drill.active.sv;
+  $('dHow').textContent='→ '+drill.active.how;
+  $('dScore').textContent=drill.score;
+  $('dStreak').textContent=drill.streak;
+  const bits=$('dBits'); bits.innerHTML='';
+  for(let i=0;i<ROUND_LEN;i++){
+    const b=document.createElement('i');
+    if(drill.results[i]==='ok')b.classList.add('ok');
+    if(drill.results[i]==='skip')b.classList.add('skip');
+    bits.appendChild(b);
+  }
+}
+let drillLock=false;
+function checkDrill(action){
+  if(S.mode!=='drill' || !drill || !drill.active || drillLock) return;
+  const t=drill.active;
+  if(t.check(S,action)){
+    drillLock=true;
+    const card=$('drillCard');
+    card.classList.remove('ok'); void card.offsetWidth; card.classList.add('ok');
+    const hinted=card.classList.contains('showHow');
+    drill.score += hinted?5:10;
+    drill.streak++;
+    drill.results.push('ok');
+    okSound();
+    $('dCmd').textContent='✔ '+t.cmd;
+    renderDrill();
+    setTimeout(()=>{ drillLock=false; nextTask(); },1100);
+  }
+}
+$('dSkipBtn').addEventListener('click',()=>{
+  if(!drill||!drill.active||drillLock) return;
+  drill.streak=0; drill.results.push('skip'); errSound();
+  toast('→ '+drill.active.how);
+  nextTask();
+});
+$('dHintBtn').addEventListener('click',()=>{ $('drillCard').classList.add('showHow'); });
+$('dAgain').addEventListener('click',startDrill);
+
+function act(name){ checkDrill(name); }
+
+/* mode switch */
+$('modeFree').addEventListener('click',()=>{
+  S.mode='free';
+  $('modeFree').classList.add('on'); $('modeDrill').classList.remove('on','drillOn');
+  $('drillCard').style.display='none';
+});
+$('modeDrill').addEventListener('click',()=>{
+  S.mode='drill';
+  $('modeDrill').classList.add('on','drillOn'); $('modeFree').classList.remove('on');
+  $('drillCard').style.display='block';
+  startDrill();
+});
+
+/* ================= SAFETY CHECKS DATA ================= */
+const CHECKS=[
+{cat:'I bilen — inside the car', items:[
+ {sv:'Bromsservo', en:'Brake servo', steps:[
+   '<b>Car switched off:</b> pump the brake pedal 4–5 times until it goes hard.',
+   'Keep the pedal pressed and <b>start the car</b>.',
+   'The pedal should <b>sink slightly</b> under your foot — that means the servo is helping.',
+   'If it stays rock hard → servo fault → much heavier braking → don’t drive, book a verkstad.'],
+  xc40:'Fully electric: there’s no idling engine — the servo is an electric brake booster, but the demo is the same: pump with the car OFF, hold, press START.',
+  xc60:'Same procedure; the T8 may start silently in electric mode — “READY” in the driver display counts as started.'},
+ {sv:'Bromspedal', en:'Brake pedal', steps:[
+   'Press the pedal down <b>hard</b>.',
+   'It must feel <b>firm</b> and must not slowly creep towards the floor.',
+   'A sinking pedal = leak in the hydraulic system → do not drive.']},
+ {sv:'Parkeringsbroms', en:'Parking brake', steps:[
+   'Both cars use an <b>electric parking brake</b> — the (P) switch beside the gear selector.',
+   'Pull the switch up to apply — <b>red (P) telltale</b> lights in the driver display.',
+   'Show that the car holds: it should not roll on a slope.',
+   'It releases automatically when you drive off (or press the switch with your foot on the brake).']},
+ {sv:'Styrning / styrservo', en:'Steering & power steering', steps:[
+   'With the car <b>on</b>, turn the wheel — it should be light and smooth.',
+   'If the car is off/dead, steering becomes very heavy = servo not working.',
+   'Check for abnormal free play: small wheel movements should move the front wheels immediately.']},
+ {sv:'Säkerhetsbälten & nackskydd', en:'Seatbelts & head restraint', steps:[
+   'Pull each belt out and check it’s <b>not frayed or cut</b>; it must click in securely.',
+   'Yank the belt sharply — the inertia lock should <b>stop it</b>.',
+   'Head restraint: top edge level with the <b>top of your head</b> — it prevents whiplash, it’s not a pillow.']},
+ {sv:'Signalhorn & varningsblinkers', en:'Horn & hazard lights', steps:[
+   'Horn: press the steering-wheel pad — it must sound.',
+   'Hazards: red triangle button — <b>all indicators</b> flash; use at breakdowns/danger.']},
+ {sv:'Varningslampor', en:'Dashboard warning lights', steps:[
+   'Switch ignition on: warning symbols light up as a <b>bulb test</b>, then go out.',
+   '<b>Red symbol while driving = stop safely as soon as possible</b> (brakes, battery/12V, steering).',
+   'Amber = check soon (e.g. low washer fluid, tyre pressure, ABS).',
+   'Be able to point out: brake warning, battery, ABS, airbag.']},
+ {sv:'Imma — defrosting', en:'Demisting the windows', steps:[
+   'Misted windscreen: <b>max defrost</b> button — full fan to the windscreen with A/C on (dry air).',
+   'Rear window & mirrors: <b>heated rear window</b> button.',
+   'Explain: you must have full vision before driving away.'],
+  xc40:'Climate controls live in the centre touchscreen — bottom bar, fan/defrost icons. A front heated windscreen is fitted on most Swedish cars.',
+  xc60:'Same: defrost icons at the bottom of the centre display.'}
+]},
+{cat:'Utanför bilen — outside the car', items:[
+ {sv:'Belysning', en:'All exterior lights', steps:[
+   'Walk around and check: <b>halvljus</b> (low beam), <b>helljus</b> (high beam), <b>parkeringsljus</b>, <b>blinkers</b> front & rear, <b>bromsljus</b>, <b>backljus</b> (reverse), <b>dimbakljus</b>, number-plate light.',
+   'Brake lights alone: press the pedal and check the <b>reflection</b> in a window/garage door — or ask someone.',
+   'All indicators at once: use the <b>hazard switch</b> and walk around.',
+   'A dead bulb: clean/replace; many functions are LED — a fault shows in the driver display.']},
+ {sv:'Däck', en:'Tyres', steps:[
+   'Tread depth (mönsterdjup): minimum <b>1.6 mm</b> summer, <b>3.0 mm</b> for winter tyres (required ~1 Dec–31 Mar in winter conditions).',
+   'Correct pressure: on the <b>decal in the driver’s door opening</b> — check with a gauge when cold.',
+   'Look for cracks, bulges, uneven wear; uneven wear can mean wrong pressure or alignment.',
+   'Same tyre type on the same axle.'],
+  xc40:'EVs are heavy and instant-torque — tyre wear is faster, so examiners like this question. The pressure decal is on the driver’s door pillar.',
+  xc60:''},
+ {sv:'Vindruta, torkare & speglar', en:'Windscreen, wipers & mirrors', steps:[
+   'No cracks or stone chips in the driver’s field of vision.',
+   'Wiper blades: whole, soft rubber, wipe without streaks — lift and feel the edge.',
+   'Washer jets reach the screen; mirrors intact and adjusted.']},
+ {sv:'Reflexer & skyltar', en:'Reflectors & plates', steps:[
+   'Rear reflectors intact and clean.',
+   'Registration plates readable, plate light works.']}
+]},
+{cat:'Under motorhuven — under the bonnet', items:[
+ {sv:'Spolarvätska', en:'Washer fluid', steps:[
+   'Open the bonnet (handle low on the driver’s side, then the safety catch).',
+   'The washer filler has a <b>blue cap with a windscreen/fountain symbol</b>.',
+   'Top up with washer fluid — in winter <b>with antifreeze</b> so the pump and jets don’t freeze.',
+   'Low fluid usually shows an amber message in the driver display.'],
+  xc40:'On the XC40 Recharge the washer filler is the <b>only thing you routinely top up</b> under the bonnet — an easy examiner favourite.',
+  xc60:''},
+ {sv:'Kylarvätska (glykol)', en:'Coolant', steps:[
+   'Find the <b>expansion tank</b> (expansionskärl) — translucent with MIN/MAX marks.',
+   'Level must sit between <b>MIN and MAX</b>, checked when cold.',
+   'Coolant is water + <b>glykol</b>: antifreeze and corrosion protection.',
+   '<b>Never open the cap when hot</b> — the system is pressurised and can scald you.'],
+  xc40:'Yes, an EV has coolant! It cools the <b>battery, motors and electronics</b>. Point to the reservoir(s), state MIN/MAX, and never touch the <b>orange high-voltage cables</b>.',
+  xc60:'The T8 has engine coolant like any petrol car, plus cooling for the hybrid system. Same rule: MIN/MAX, never open hot.'},
+ {sv:'Bromsvätska', en:'Brake fluid', steps:[
+   'Reservoir sits high up near the <b>bulkhead (torpedväggen)</b> on the driver’s side, yellow-ish fluid, MIN/MAX marks.',
+   'Level between MIN and MAX.',
+   '<b>Low level is a warning sign</b>: worn brake pads or a leak — investigate at a verkstad, don’t just top up.',
+   'A red brake warning light can mean dangerously low fluid → do not drive.']},
+ {sv:'Motorolja', en:'Engine oil', steps:[
+   'Needed for lubrication and cooling of the engine; too little → engine damage.',
+   'Check on level ground, engine off a few minutes.'],
+  xc40:'<b>Trick question for the EV:</b> the XC40 Recharge has <b>no engine oil to check</b> — no combustion engine. Say exactly that, and offer to show coolant/washer/brake fluid instead.',
+  xc60:'<b>No dipstick!</b> The XC60 checks oil <b>electronically</b>: centre display → <b>Car status</b> → oil level. Needs the car on level ground and ~5 min after the engine stops. Top up only when the display asks.'},
+ {sv:'Drivmedel / laddning', en:'Fuel / charge', steps:[
+   'Know where to read the level before a journey and roughly how far you can go.'],
+  xc40:'Battery % and range in the driver display. Charging port on the rear left wing; charging cables usually live in the <b>frunk</b>. 12 V battery still exists and can go flat.',
+  xc60:'Petrol gauge + electric range in the driver display. Fuel filler rear right; the T8 takes petrol (95 E10). Plug-in charging port on the front left wing.'}
+]},
+{cat:'Övrigt — other requirements', items:[
+ {sv:'Varningstriangel', en:'Warning triangle', steps:[
+   '<b>Legal requirement</b> in every Swedish-registered car — usually under the boot floor.',
+   'At a breakdown: hazards on, reflective vest, place the triangle <b>50–100 m</b> behind the car (further on fast roads).']},
+ {sv:'Last & sikt', en:'Load & visibility', steps:[
+   'Loose objects secured — a phone on the shelf becomes a projectile.',
+   'Windows clear of snow/ice/stickers; nothing blocking airbags or your view.',
+   'Heaviest load low and forward in the boot.']}
+]}];
+
+function buildChecks(){
+  const root=$('checksList'); root.innerHTML='';
+  CHECKS.forEach(group=>{
+    const h=document.createElement('h3'); h.className='catHead';
+    const [sv,en]=group.cat.split('—');
+    h.innerHTML=sv+'<small>'+(en||'')+'</small>';
+    root.appendChild(h);
+    group.items.forEach(it=>{
+      const d=document.createElement('details'); d.className='check';
+      let body='<ol>'+it.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol>';
+      if(it.xc40) body+='<div class="carnote xc40"><span class="chip">XC40 ⚡</span><span>'+it.xc40+'</span></div>';
+      if(it.xc60) body+='<div class="carnote xc60"><span class="chip">XC60 T8</span><span>'+it.xc60+'</span></div>';
+      d.innerHTML='<summary><span class="chev">▶</span><span class="sv">'+it.sv+'</span><span class="en">'+it.en+'</span></summary><div class="body">'+body+'</div>';
+      root.appendChild(d);
+    });
+  });
+}
+
+/* ================= QUIZ DATA ================= */
+const QUIZ=[
+{cat:'brakes', q:'How do you test that the brake servo works?', sv:'Hur kontrollerar du bromsservon?',
+ opts:['Pump the pedal 4–5 times with the car off until firm, hold it down, start the car — the pedal should sink slightly',
+ 'Press the pedal hard while driving at 30 km/h and feel the response',
+ 'Start the car and listen for a hissing sound from the pedal',
+ 'Pull the parking brake while pressing the brake pedal'],
+ a:0, why:'Pumping empties the vacuum/pressure reserve. When you start the car the servo builds assistance again, so the held pedal <b>sinks slightly</b> — that sink is the proof.'},
+{cat:'brakes', q:'You press the brake pedal hard and it slowly sinks to the floor. What does this mean?',
+ opts:['Likely a leak in the hydraulic system — the car must not be driven','Normal behaviour for electric cars','The brake pads are new and need bedding in','The servo is too strong'],
+ a:0, why:'A creeping pedal means the system is losing pressure — a leak. That is a <b>do not drive</b> fault.'},
+{cat:'brakes', q:'The brake fluid level is just below MIN. What is the correct response?',
+ opts:['Investigate the cause — it may mean worn pads or a leak — before driving','Top it up with water and drive normally','Ignore it; brake fluid does not matter on cars with ABS','Pump the brakes until the level rises'],
+ a:0, why:'Brake fluid is a sealed system. A low level always has a cause: worn pads (piston travel) or a leak. Topping up without checking hides the warning.'},
+{cat:'fluids', q:'What is glykol (in kylarvätskan) actually for?',
+ opts:['Antifreeze and corrosion protection in the cooling system','Improving fuel economy','Lubricating the water pump bearings only','Cleaning the windscreen in winter'],
+ a:0, why:'Coolant is water + glycol: it stops the system freezing in winter, raises the boiling point, and protects against corrosion. Level between MIN/MAX — <b>never open the cap hot</b>.'},
+{cat:'fluids', q:'Why must you never open the coolant expansion tank cap when the system is hot?',
+ opts:['The system is pressurised — hot coolant can spray out and scald you','The coolant evaporates instantly and is lost','It lets air in, which rusts the engine immediately','The cap thread is only loose when cold'],
+ a:0, why:'Pressure keeps the boiling point up. Open it hot and the pressure release can blast boiling coolant over your hands and face.'},
+{cat:'fluids', q:'XC40 Recharge: the examiner asks you to check the engine oil. What do you say?', car:'xc40',
+ opts:['“This car is fully electric — it has no engine oil. I can show coolant, brake fluid and washer fluid instead.”','Open the frunk and pull the dipstick','Check oil level in the centre display under Car status','Say the oil is checked automatically at every charge'],
+ a:0, why:'There is no combustion engine, so no engine oil to check. Knowing what your car <b>doesn’t</b> have scores just as well as knowing what it has.'},
+{cat:'fluids', q:'XC60 T8: how do you check the engine oil level?', car:'xc60',
+ opts:['Centre display → Car status → oil level (no physical dipstick), car on level ground','Pull the yellow dipstick at the front of the engine','Unscrew the oil filler cap and look inside','It can only be checked by a workshop'],
+ a:0, why:'SPA-platform Volvos use an <b>electronic oil level sensor</b> — there is no dipstick. The reading needs level ground and ~5 minutes after the engine stops.'},
+{cat:'fluids', q:'Which fluid do you top up with antifreeze mix in winter?',
+ opts:['Spolarvätska — washer fluid','Bromsvätska — brake fluid','Kylarvätska — it must be replaced every winter','AC refrigerant'],
+ a:0, why:'Frozen washer fluid means no vision when salty slush hits the screen — and a cracked pump/reservoir. Winter washer fluid contains antifreeze.'},
+{cat:'tyres', q:'Minimum legal tread depth in summer, and on winter tyres when winter conditions apply?',
+ opts:['1.6 mm summer · 3.0 mm winter','0.6 mm summer · 1.6 mm winter','3.0 mm summer · 5.0 mm winter','2.5 mm for both'],
+ a:0, why:'1.6 mm is the legal summer minimum; winter tyres need <b>at least 3.0 mm</b>. Winter tyres are mandatory 1 Dec–31 Mar in winter road conditions.'},
+{cat:'tyres', q:'Where do you find the correct tyre pressure for the car?',
+ opts:['On a decal in the driver’s door opening (or the manual)','Stamped on the tyre sidewall','On the registration certificate','It is always exactly 2.5 bar'],
+ a:0, why:'The sidewall number is the tyre’s <b>maximum</b>, not the recommendation. The car-specific pressures are on the door-jamb decal — often different front/rear and for full load.'},
+{cat:'lights', q:'How can you check the brake lights when you are alone?',
+ opts:['Press the pedal and look for the reflection in a window or garage door behind the car','It is impossible alone — you must ask someone','Turn on hazard lights; they use the same bulbs','Pull the parking brake, which lights the brake lights'],
+ a:0, why:'Reverse up to a shop window or garage door, press the pedal, check the red glow in the mirror. (A helper works too — but you should have a one-person method.)'},
+{cat:'lights', q:'When may you use the rear fog light (dimbakljus)?',
+ opts:['Only in fog, heavy snowfall or similar poor visibility — it dazzles drivers behind','Whenever it is dark outside','Always in winter','Together with high beam for maximum visibility'],
+ a:0, why:'It is very bright by design. In normal conditions it just dazzles and masks your brake lights. Switch it off when visibility improves.'},
+{cat:'lights', q:'On the Volvo stalk, which way do you move it to indicate RIGHT?',
+ opts:['Up — the stalk follows the steering-wheel direction','Down','Push it forward','Pull it towards you'],
+ a:0, why:'Stalk <b>up = right</b>, <b>down = left</b> — the tip moves the same way you will turn the wheel. A light tap gives three lane-change blinks; past the resistance latches it.'},
+{cat:'lights', q:'The collar on the left stalk is in position O. You push the stalk forward to get high beam — nothing happens. Why?',
+ opts:['High beam requires the collar in AUTO or halvljus position','The bulb must be broken','High beam only works above 50 km/h','You must press the AHB button first'],
+ a:0, why:'In O you only have position lamps — no low beam, so no high beam either. Turn the collar to AUTO (recommended) or halvljus first. The <b>flash</b> (pull) works regardless.'},
+{cat:'inside', q:'How should the head restraint (nackskydd) be positioned?',
+ opts:['Top of the restraint level with the top of your head','As low as possible to support the neck','Touching your shoulders','It only matters for the driver, not passengers'],
+ a:0, why:'In a rear-end impact the restraint must catch the <b>head</b>, not the neck. Top edge level with your crown, as close to the head as possible.'},
+{cat:'inside', q:'A red warning symbol appears in the driver display while you drive. What does red mean?',
+ opts:['Stop safely as soon as possible and investigate — risk of damage or danger','Service is due within a month','Information only — no action needed','Switch the radio off to save power'],
+ a:0, why:'Red = stop. Amber = check soon. Typical reds: brake system, low oil pressure (XC60), battery/charging fault, steering.'},
+{cat:'inside', q:'The windscreen mists up (imma) just before you drive off. Correct action?',
+ opts:['Max defrost: full fan on the windscreen with A/C on, heated rear window for the back','Wipe it with your glove and drive — it clears itself','Open all windows and drive slowly','Use the windscreen washers'],
+ a:0, why:'A/C dries the air, the fan clears the screen fast. You must have full vision <b>before</b> moving — driving while it clears is a test fail.'},
+{cat:'ev', q:'Under the bonnet of the XC40 Recharge you see thick orange cables. What do they mean?', car:'xc40',
+ opts:['High-voltage wiring — never touch, cut or disconnect them','Heated washer-fluid hoses','They mark parts you may service yourself','Low-voltage 12 V wiring'],
+ a:0, why:'Orange = high voltage (400 V). You check fluids and leave everything orange alone. Good safety answer for the examiner.'},
+{cat:'ev', q:'Does the XC40 Recharge have coolant to check, even with no engine?', car:'xc40',
+ opts:['Yes — the battery, motors and electronics are liquid-cooled; check MIN/MAX on the expansion tank','No — electric cars are air-cooled','Only in summer','Only the brake fluid doubles as coolant'],
+ a:0, why:'EVs absolutely have cooling systems — battery temperature management is critical. Same rules: level between MIN/MAX, never open hot.'},
+{cat:'other', q:'Where should you place the warning triangle after a motorway breakdown?',
+ opts:['50–100 m behind the car (more on very fast roads)','5–10 m behind the car','On the roof of the car','In the rear window'],
+ a:0, why:'Traffic at 110+ km/h needs distance to react. Hazards on, vest on, triangle out 50–100 m back, people behind the barrier.'},
+{cat:'other', q:'Which of these is a legal requirement to carry in the car in Sweden?',
+ opts:['Warning triangle','Reflective vest','First-aid kit','Fire extinguisher'],
+ a:0, why:'Only the <b>varningstriangel</b> is required by law for registered cars. The vest and first-aid kit are smart, but optional.'},
+{cat:'wipers', q:'What does the ☂ button on the right stalk do?',
+ opts:['Activates the rain sensor so the INT position wipes automatically','Heats the wiper blades','Locks the wipers for winter parking','Sprays washer fluid'],
+ a:0, why:'With the sensor on and the stalk in INT/AUTO, the car wipes when it detects water; the thumbwheel sets sensitivity.'},
+];
+
+let qz=null;
+function startQuiz(){
+  const pool = QUIZ.filter(q=>!q.car || q.car===S.car);
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]];}
+  qz={list:pool, i:0, score:0, answered:false};
+  $('quizStart').style.display='none';
+  $('quizEnd').style.display='none';
+  $('quizPlay').style.display='block';
+  renderQ();
+}
+function renderQ(){
+  const q=qz.list[qz.i];
+  qz.answered=false;
+  $('qNum').textContent=(qz.i+1)+'/'+qz.list.length;
+  $('qCat').textContent=q.cat + (q.car?' · '+q.car.toUpperCase():'');
+  $('qScore').textContent=qz.score;
+  $('qText').textContent=q.q;
+  $('qSvText').textContent=q.sv||'';
+  $('qWhy').style.display='none';
+  $('qNext').style.display='none';
+  const box=$('qOpts'); box.innerHTML='';
+  /* shuffle options, remember correct */
+  const order=q.opts.map((_,i)=>i);
+  for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [order[i],order[j]]=[order[j],order[i]];}
+  order.forEach((oi,pos)=>{
+    const b=document.createElement('button'); b.className='opt';
+    b.innerHTML='<span class="key">'+String.fromCharCode(65+pos)+'</span><span>'+q.opts[oi]+'</span>';
+    b.addEventListener('click',()=>answerQ(b,oi===q.a,q));
+    box.appendChild(b);
+  });
+}
+function answerQ(btn, correct, q){
+  if(qz.answered) return;
+  qz.answered=true;
+  if(correct){ btn.classList.add('correct'); qz.score++; okSound(); }
+  else{
+    btn.classList.add('wrong'); errSound();
+    [...$('qOpts').children].forEach(b=>{
+      if(q.opts[q.a]===b.querySelector('span:last-child').textContent) b.classList.add('correct');
+    });
+  }
+  [...$('qOpts').children].forEach(b=>{ if(!b.classList.contains('correct')&&!b.classList.contains('wrong')) b.classList.add('faded'); });
+  $('qScore').textContent=qz.score;
+  $('qWhy').innerHTML='<b>Why:</b> '+q.why;
+  $('qWhy').style.display='block';
+  $('qNext').style.display='block';
+  $('qNext').textContent = qz.i+1<qz.list.length ? 'Next question →' : 'See result →';
+}
+$('qNext').addEventListener('click',()=>{
+  qz.i++;
+  if(qz.i>=qz.list.length){
+    $('quizPlay').style.display='none';
+    $('quizEnd').style.display='block';
+    $('qFinal').textContent=qz.score+'/'+qz.list.length;
+    const r=qz.score/qz.list.length;
+    $('qFinalMsg').textContent =
+      r===1 ? 'Flawless — the examiner has nothing left to ask. Godkänd! 🟢' :
+      r>=.8 ? 'Strong — re-read the cards for the ones you missed and you’re test-ready.' :
+      r>=.5 ? 'Decent base — spend time in the Checks tab, especially brakes and fluids.' :
+      'Start with the Checks tab and come back — brakes, fluids and tyres are the examiner’s favourites.';
+  } else renderQ();
+});
+$('quizGo').addEventListener('click',startQuiz);
+$('quizAgain').addEventListener('click',startQuiz);
+
+/* ================= TABS / CAR / SOUND ================= */
+document.querySelectorAll('nav.tabbar button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('nav.tabbar button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.querySelectorAll('.tabpane').forEach(p=>p.classList.remove('on'));
+    $('pane-'+b.dataset.tab).classList.add('on');
+    window.scrollTo({top:0});
+  });
+});
+function setCar(car){
+  S.car=car;
+  document.body.dataset.car=car;
+  $('carXc40').classList.toggle('on',car==='xc40');
+  $('carXc60').classList.toggle('on',car==='xc60');
+  $('qCarName').textContent = car==='xc40'?'XC40 Recharge (fully electric)':'XC60 Recharge T8 (plug-in hybrid)';
+  /* restart quiz pool if mid-quiz */
+  if(qz && $('quizPlay').style.display!=='none'){ startQuiz(); }
+  toast(car==='xc40'
+    ? '<b>XC40 Recharge</b> — fully electric: no engine oil, no fuel; coolant + brake fluid + washer fluid under the bonnet.'
+    : '<b>XC60 T8</b> — plug-in hybrid: petrol engine, oil checked via centre display (no dipstick), fuel + charge.');
+}
+$('carXc40').addEventListener('click',()=>setCar('xc40'));
+$('carXc60').addEventListener('click',()=>setCar('xc60'));
+$('sndBtn').addEventListener('click',()=>{
+  S.sound=!S.sound;
+  $('sndBtn').classList.toggle('on',S.sound);
+  $('sndBtn').textContent=S.sound?'♪':'∅';
+});
+
+/* ================= INIT ================= */
+buildChecks();
+render();
+</script>
+</body>
+</html>
