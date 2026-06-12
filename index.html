@@ -725,8 +725,8 @@ function render(){
   /* lever rotations */
   const lv=$('leverL');
   let rot=0;
-  if(S.indicator==='right') rot=-13;
-  if(S.indicator==='left') rot=13;
+  if(S.indicator==='right') rot=13;
+  if(S.indicator==='left') rot=-13;
   lv.style.transform=`rotate(${rot}deg)`;
   $('ringBand').textContent = S.ring==='O'?'O':(S.ring==='AUTO'?'AUTO':'☼');
   $('bRingT').textContent = 'Ring: '+RING_LABEL[S.ring];
