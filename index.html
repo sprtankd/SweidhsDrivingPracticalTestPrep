@@ -387,6 +387,61 @@ body[data-car="xc60"] .bigBtn{color:#241a05; box-shadow:0 6px 24px #ffc4633d}
 .quizEnd .big{font-family:'Chakra Petch'; font-size:3rem; font-weight:700; color:var(--accent)}
 .quizEnd p{color:var(--mut); font-size:.84rem}
 
+/* ---------- climate ---------- */
+.cabinViz{display:flex; gap:18px; align-items:flex-start; justify-content:center; flex-wrap:wrap; padding:6px 0}
+.vizCol{display:flex; flex-direction:column; align-items:center; gap:6px}
+.vizCol small{color:var(--dim); font-size:.6rem; font-family:'Chakra Petch'; text-transform:uppercase; letter-spacing:.12em}
+.cwin{
+  position:relative; overflow:hidden; background:linear-gradient(180deg,#0e2233,#091420 70%);
+  border:1px solid var(--line2);
+}
+.cwin.front{width:170px; height:88px; border-radius:14px 14px 7px 7px; clip-path:polygon(8% 0,92% 0,100% 100%,0 100%)}
+.cwin.rear{width:112px; height:64px; border-radius:7px 7px 11px 11px; clip-path:polygon(0 0,100% 0,88% 100%,12% 100%)}
+.cwin .horizon{position:absolute; left:0; right:0; top:55%; height:1px; background:#27445d}
+.mist{
+  position:absolute; inset:0; opacity:.94; transition:opacity 2.4s ease;
+  background:
+    radial-gradient(38px 26px at 22% 38%, #dfeaf2cc, transparent 70%),
+    radial-gradient(46px 30px at 58% 60%, #d4e2eccc, transparent 70%),
+    radial-gradient(40px 26px at 84% 32%, #dfeaf2c4, transparent 70%),
+    linear-gradient(180deg,#c5d6e3e0,#b9cddcd6);
+  display:grid; place-items:center;
+}
+.mist::after{content:"IMMA"; font-family:'Chakra Petch'; font-size:.6rem; letter-spacing:.3em; color:#5c7188}
+.cwin.clear .mist{opacity:0}
+.heatRow{display:flex; gap:16px; justify-content:center; flex-wrap:wrap}
+.heatGlyph{
+  width:58px; height:58px; border-radius:13px; display:grid; place-items:center;
+  background:var(--inset); border:1px solid #1b2735; transition:box-shadow .4s, border-color .4s;
+}
+.heatGlyph svg{width:36px; height:36px; stroke:#7d92a8; fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; transition:stroke .3s}
+.heatGlyph[data-l="1"]{border-color:#5a3a1d; box-shadow:0 0 10px #ff8c2e2b, inset 0 0 8px #ff8c2e14}
+.heatGlyph[data-l="2"]{border-color:#7a4a1d; box-shadow:0 0 16px #ff8c2e55, inset 0 0 12px #ff8c2e22}
+.heatGlyph[data-l="3"]{border-color:#a85c1e; box-shadow:0 0 26px #ff8c2e88, inset 0 0 16px #ff8c2e33}
+.heatGlyph[data-l="1"] svg,.heatGlyph[data-l="2"] svg,.heatGlyph[data-l="3"] svg{stroke:#ffa64d}
+.pips{display:flex; gap:3px; justify-content:center}
+.pips i{width:9px; height:4px; border-radius:2px; background:#22324433}
+.pips i.on{background:#ffa64d}
+.clbar{display:grid; grid-template-columns:repeat(auto-fit,minmax(96px,1fr)); gap:7px; margin-top:4px}
+.clbar .cbtn svg{width:23px; height:23px; stroke:#9db2c6; fill:none; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round}
+.clbar .cbtn.on svg{stroke:var(--accent)}
+.clbar .cbtn.hot svg{stroke:#ffa64d}
+.clbar .cbtn.hot{border-color:#7a4a1d; box-shadow:0 0 12px #ff8c2e2e, inset 0 0 0 1px #a85c1e}
+.clbar .cbtn.hot .t{color:#ffa64d}
+.tempRow{display:flex; align-items:center; gap:8px; grid-column:1 / -1; justify-content:center; margin-top:7px; flex-wrap:wrap}
+.tempRow .tval{font-family:'Chakra Petch'; font-weight:700; font-size:1.15rem; color:var(--ink); min-width:84px; text-align:center}
+.tempRow .tval small{display:block; font-size:.56rem; color:var(--dim); font-weight:400; letter-spacing:.12em}
+.symList{margin:4px 0 0; padding:0; list-style:none}
+.symList li{display:flex; gap:11px; align-items:flex-start; padding:9px 2px; border-top:1px dashed #22304255; font-size:.78rem; color:#c6d4e2; line-height:1.5}
+.symList li:first-child{border-top:none}
+.symList .ic{
+  flex:0 0 42px; height:42px; border-radius:10px; background:var(--inset); border:1px solid #1b2735;
+  display:grid; place-items:center;
+}
+.symList .ic svg{width:27px; height:27px; stroke:#9db2c6; fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round}
+.symList b{color:var(--ink)}
+.symList .svw{color:var(--ice); font-style:italic}
+
 /* ---------- guide (photos + diagrams) ---------- */
 .gGrid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
 @media(max-width:620px){.gGrid{grid-template-columns:1fr}}
@@ -581,14 +636,144 @@ footer a{color:var(--mut)}
 
 </section>
 
+<!-- ============ CLIMATE TAB ============ -->
+<section class="tabpane" id="pane-climate">
+  <p class="intro">Warming the car &amp; clearing <b>imma</b> — in both cars these controls live in the <b>climate bar at the bottom of the centre touchscreen</b>. Tap the buttons below like you would on the real screen; the cabin reacts. The examiner's favourite here: <i>"Visa hur du får bort imman"</i> — show how you clear a misted windscreen.</p>
+
+  <div class="drillCard" id="cdCard">
+    <div id="cdLive">
+      <div class="drillTop">
+        <span class="examTag">Examiner says</span>
+        <span class="drillScore">Score <b id="cdScore">0</b></span>
+      </div>
+      <div class="drillCmd" id="cdCmd">Press Start to drill the climate controls</div>
+      <div class="drillSv" id="cdSv"></div>
+      <div class="drillHow" id="cdHow"></div>
+      <div class="drillBtns">
+        <button id="cdStartBtn">▶ Start</button>
+        <button id="cdHintBtn" style="display:none">💡 Hint</button>
+        <button id="cdSkipBtn" style="display:none">Skip →</button>
+      </div>
+      <div class="progressBits" id="cdBits"></div>
+    </div>
+    <div class="drillDone" id="cdDone" style="display:none">
+      <div class="big" id="cdFinal">0</div>
+      <p style="color:var(--mut);font-size:.82rem" id="cdVerdict"></p>
+      <button class="bigBtn" id="cdAgain">New round</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <p class="panelTitle">Cabin · kupé</p>
+    <div class="cabinViz">
+      <div class="vizCol">
+        <div class="cwin front" id="cwF"><div class="horizon"></div><div class="mist"></div></div>
+        <small>vindruta</small>
+      </div>
+      <div class="vizCol">
+        <div class="cwin rear" id="cwR"><div class="horizon"></div><div class="mist"></div></div>
+        <small>bakruta + speglar</small>
+      </div>
+      <div class="vizCol">
+        <div class="heatRow">
+          <div class="vizCol">
+            <div class="heatGlyph" id="hgWheel" data-l="0">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="7"/><path d="M5.3 9h13.4M12 10v6.6"/><circle cx="12" cy="10" r="2"/><path d="M7 20q1-1.2 0 0M7 19.5q.8-1.4 1.6 0q.8 1.4 1.6 0M13 19.5q.8-1.4 1.6 0q.8 1.4 1.6 0"/></svg>
+            </div>
+            <div class="pips" id="ppWheel"><i></i><i></i><i></i></div>
+            <small>ratt</small>
+          </div>
+          <div class="vizCol">
+            <div class="heatGlyph" id="hgDSeat" data-l="0">
+              <svg viewBox="0 0 24 24"><path d="M7 3v9q0 3.5 3.5 3.5H16M6.7 18.5H15"/><path d="M12 5q1.2 1.5 0 3t0 3M16 5q1.2 1.5 0 3t0 3"/></svg>
+            </div>
+            <div class="pips" id="ppDSeat"><i></i><i></i><i></i></div>
+            <small>förarstol</small>
+          </div>
+          <div class="vizCol">
+            <div class="heatGlyph" id="hgPSeat" data-l="0">
+              <svg viewBox="0 0 24 24"><path d="M17 3v9q0 3.5-3.5 3.5H8M17.3 18.5H9"/><path d="M12 5q-1.2 1.5 0 3t0 3M8 5q-1.2 1.5 0 3t0 3"/></svg>
+            </div>
+            <div class="pips" id="ppPSeat"><i></i><i></i><i></i></div>
+            <small>passagerare</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="statusline" id="clStatus"></div>
+  </div>
+
+  <div class="panel">
+    <p class="panelTitle">Climate bar · klimatraden (bottom of centre display)</p>
+    <div class="clbar">
+      <button class="cbtn" id="bcWheel">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="M6.3 8h11.4M12 9v5.6"/><path d="M6.5 19q.8-1.4 1.6 0q.8 1.4 1.6 0M13 19q.8-1.4 1.6 0q.8 1.4 1.6 0"/></svg>
+        <span class="t">Rattvärme</span><span class="s">heated wheel</span>
+      </button>
+      <button class="cbtn" id="bcDSeat">
+        <svg viewBox="0 0 24 24"><path d="M7 3v9q0 3.5 3.5 3.5H16M6.7 18.5H15"/><path d="M12 5.5q1 1.3 0 2.6t0 2.6M15.5 5.5q1 1.3 0 2.6t0 2.6"/></svg>
+        <span class="t">Driver seat</span><span class="s">stolsvärme</span>
+      </button>
+      <button class="cbtn" id="bcPSeat">
+        <svg viewBox="0 0 24 24"><path d="M17 3v9q0 3.5-3.5 3.5H8M17.3 18.5H9"/><path d="M12 5.5q-1 1.3 0 2.6t0 2.6M8.5 5.5q-1 1.3 0 2.6t0 2.6"/></svg>
+        <span class="t">Pass. seat</span><span class="s">stolsvärme</span>
+      </button>
+      <button class="cbtn" id="bcMaxDef">
+        <svg viewBox="0 0 24 24"><path d="M4 18 6 7h12l2 11z"/><path d="M9 15v-2q0-1.5 1-2.5M12 15v-3q0-2 1-3M15 15v-2q0-1.5-1-2.5" transform="translate(0,-1)"/><path d="M8.5 9.5 9 8M12 9V7.5M15.5 9.5 15 8"/></svg>
+        <span class="t">Max defrost</span><span class="s">maxdefroster fram</span>
+      </button>
+      <button class="cbtn" id="bcRearDef">
+        <svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="10" rx="2"/><path d="M8 15v-1.5q0-1.5 1-2.5M12 15v-2q0-1.8 1-2.8M16 15v-1.5q0-1.5-1-2.5" transform="translate(0,-1)"/></svg>
+        <span class="t">Rear defrost</span><span class="s">bakruta + speglar</span>
+      </button>
+      <button class="cbtn" id="bcPrecon">
+        <svg viewBox="0 0 24 24"><circle cx="9" cy="12" r="6"/><path d="M9 8.5V12l2.5 1.5"/><path d="M17 6q1.4 1.8 0 3.6t0 3.6t0 3.6M20.5 6q1.4 1.8 0 3.6t0 3.6t0 3.6" transform="scale(.9) translate(1,0)"/></svg>
+        <span class="t">Precondition</span><span class="s">förkonditionering</span>
+      </button>
+      <button class="cbtn" id="bcFog">
+        <svg viewBox="0 0 24 24"><path d="M7 15a4.5 4.5 0 1 1 .8-8.9A5.5 5.5 0 0 1 18 8.5 3.8 3.8 0 0 1 17.5 15z"/><path d="M7 18h10M9 21h6" stroke-dasharray="2.5 2.5"/></svg>
+        <span class="t">Fog it up</span><span class="s">cold morning ☁</span>
+      </button>
+      <div class="tempRow">
+        <button class="cbtn mini" id="bcTdn"><span class="t">−</span><span class="s">temp</span></button>
+        <div class="tval" id="clTemp">21.0°C<small>TEMP · AUTO</small></div>
+        <button class="cbtn mini" id="bcTup"><span class="t">+</span><span class="s">temp</span></button>
+        <button class="cbtn mini" id="bcFdn"><span class="t">−</span><span class="s">fan</span></button>
+        <div class="tval" id="clFan">2<small>FLÄKT</small></div>
+        <button class="cbtn mini" id="bcFup"><span class="t">+</span><span class="s">fan</span></button>
+      </div>
+    </div>
+    <p class="hintline">Seat &amp; wheel heating cycle <b>high → medium → low → off</b>, exactly like tapping the icons on the Volvo screen. <b>Max defrost</b> overrides everything: full fan + A/C on the windscreen.</p>
+  </div>
+
+  <div class="panel">
+    <p class="panelTitle">What the symbols mean · symbolerna</p>
+    <ul class="symList">
+      <li><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 18 6 7h12l2 11z"/><path d="M8.5 9.5 9 8M12 9V7.5M15.5 9.5 15 8"/><path d="M9 14v-1.5q0-1.5 1-2.5M12 14v-2.5q0-1.8 1-2.8M15 14v-1.5q0-1.5-1-2.5"/></svg></span>
+        <span><b>Max defrost</b> <span class="svw">(maxdefroster)</span> — trapezoid = windscreen, wavy arrows = hot air. One tap: full fan + A/C aimed at the glass. The fastest legal way to clear imma before driving — you must have full vision <b>before</b> you move off.</span></li>
+      <li><span class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="10" rx="2"/><path d="M8 14v-1.5q0-1.5 1-2.5M12 14v-2q0-1.8 1-2.8M16 14v-1.5q0-1.5-1-2.5"/></svg></span>
+        <span><b>Heated rear window</b> <span class="svw">(eluppvärmd bakruta)</span> — rectangle = rear glass. Electric wires heat the glass and usually the <b>door mirrors</b> too. Switches off automatically after a while.</span></li>
+      <li><span class="ic"><svg viewBox="0 0 24 24"><path d="M7 3v9q0 3.5 3.5 3.5H16M6.7 18.5H15"/><path d="M12 5.5q1 1.3 0 2.6t0 2.6M15.5 5.5q1 1.3 0 2.6t0 2.6"/></svg></span>
+        <span><b>Seat heating</b> <span class="svw">(stolsvärme)</span> — seat in profile + heat waves. Each tap steps high → medium → low → off, <b>per seat</b>. In the real car you tap the seat icon in the climate bar (long-press opens the full climate view).</span></li>
+      <li><span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="M6.3 8h11.4M12 9v5.6"/><path d="M6.5 19q.8-1.4 1.6 0q.8 1.4 1.6 0M13 19q.8-1.4 1.6 0q.8 1.4 1.6 0"/></svg></span>
+        <span><b>Heated steering wheel</b> <span class="svw">(rattvärme)</span> — wheel + heat waves, three levels. Found in the climate bar next to the seat icons.</span></li>
+      <li><span class="ic"><svg viewBox="0 0 24 24"><circle cx="9" cy="12" r="6"/><path d="M9 8.5V12l2.5 1.5"/><path d="M17.5 7q1.3 1.7 0 3.4t0 3.4t0 3.4M21 7q1.3 1.7 0 3.4t0 3.4t0 3.4"/></svg></span>
+        <span><b>Preconditioning</b> <span class="svw">(förkonditionering / parkeringsklimat)</span> — clock + heat: warm (or cool) the cabin <b>before</b> you drive, set in the Climate app or remotely from the Volvo Cars phone app. Winter bonus: ice melts off the windows by itself. Idling a parked engine to warm up is restricted to <b>1 minute</b> in most Swedish municipalities — preconditioning is the legal way.</span></li>
+    </ul>
+    <div class="carnote xc40"><span class="chip">XC40 ⚡</span><span>Everything is electric heat. Precondition <b>while plugged in</b> and the cabin warms on grid power — you keep your full driving range. Heat pump + seat/wheel heating use less energy than cabin air heat.</span></div>
+    <div class="carnote xc60"><span class="chip">XC60 T8</span><span>The T8 preconditions electrically too (no engine idling needed). Climate bar works the same; front/rear defrost also sit as fixed shortcuts at the bottom of the screen.</span></div>
+  </div>
+</section>
+
 <!-- ============ GUIDE TAB ============ -->
 <section class="tabpane" id="pane-guide">
   <p class="intro">How the real stalks look and where every control sits. Diagrams first (these match the trainer), then real photos with <b>numbered pins</b>. On a wide desktop screen these also dock left and right of the cockpit.</p>
   <div class="gGrid" id="guideDiagrams"></div>
   <div class="gGrid" id="guidePhotos"></div>
   <p class="photoCred" style="text-align:center; margin-top:14px">
-    Photos: <a href="https://commons.wikimedia.org/wiki/File:VOLVO_XC40_RECHARGE_INTERIOR.jpg">Dinkun Chen</a> (XC40) ·
-    <a href="https://commons.wikimedia.org/wiki/File:2023_Volvo_XC60_interior.jpg">deathpallie325</a> (XC60) —
+    Photos: <a href="https://commons.wikimedia.org/wiki/File:VOLVO_XC40_RECHARGE_INTERIOR.jpg">Dinkun Chen</a> ·
+    <a href="https://commons.wikimedia.org/wiki/File:2023_Volvo_XC60_interior.jpg">deathpallie325</a> ·
+    <a href="https://commons.wikimedia.org/wiki/File:Volvo_XC60_Ultra_SPA_FL_Charcoal_Amber_Two-tone_(2).jpg">Damian B Oh</a> —
     <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>, cropped &amp; brightened.
   </p>
 </section>
@@ -633,6 +818,7 @@ footer a{color:var(--mut)}
 
 <nav class="tabbar">
   <button class="on" data-tab="cockpit"><span class="ic">🕹</span>Stalks</button>
+  <button data-tab="climate"><span class="ic">🔥</span>Climate</button>
   <button data-tab="guide"><span class="ic">📷</span>Guide</button>
   <button data-tab="checks"><span class="ic">🔧</span>Checks</button>
   <button data-tab="quiz"><span class="ic">❓</span>Quiz</button>
@@ -1064,7 +1250,8 @@ const CHECKS=[
  {sv:'Imma — defrosting', en:'Demisting the windows', steps:[
    'Misted windscreen: <b>max defrost</b> button — full fan to the windscreen with A/C on (dry air).',
    'Rear window & mirrors: <b>heated rear window</b> button.',
-   'Explain: you must have full vision before driving away.'],
+   'Explain: you must have full vision before driving away.',
+   'Cold mornings: use <b>förkonditionering</b> (preconditioning) so the car is warm and ice-free before you go — practise it in the Climate tab.'],
   xc40:'Climate controls live in the centre touchscreen — bottom bar, fan/defrost icons. A front heated windscreen is fitted on most Swedish cars.',
   xc60:'Same: defrost icons at the bottom of the centre display.'}
 ]},
@@ -1218,6 +1405,15 @@ const QUIZ=[
 {cat:'wipers', q:'What does the ☂ button on the right stalk do?',
  opts:['Activates the rain sensor so the INT position wipes automatically','Heats the wiper blades','Locks the wipers for winter parking','Sprays washer fluid'],
  a:0, why:'With the sensor on and the stalk in INT/AUTO, the car wipes when it detects water; the thumbwheel sets sensitivity.'},
+{cat:'climate', q:'Which symbol clears a misted windscreen the fastest?',
+ opts:['The trapezoid (windscreen) with wavy arrows — max defrost','The rectangle with wavy arrows','The seat with heat waves','The fan symbol on level 1'],
+ a:0, why:'Trapezoid = windscreen: max defrost forces full fan + A/C onto the front glass. The rectangle is the <b>rear</b> window. You must have clear vision before driving off.'},
+{cat:'climate', q:'Where do you find seat heating and the heated steering wheel in the XC40/XC60?',
+ opts:['In the climate bar at the bottom of the centre touchscreen','Physical buttons on the door panel','A stalk behind the steering wheel','Only via the Volvo phone app'],
+ a:0, why:'Both cars put climate controls in the <b>bottom row of the centre display</b>: tap the seat/wheel icons to cycle high → medium → low → off.'},
+{cat:'climate', q:'It is −10 °C tomorrow morning. What is the smartest, legal way to a warm and ice-free car?',
+ opts:['Preconditioning (förkonditionering) on a timer — for the EV, while plugged in','Start the engine 15 minutes early and let it idle','Pour hot water over the windscreen','Drive off immediately; the windows clear while driving'],
+ a:0, why:'Idling is limited to <b>1 minute</b> in most Swedish municipalities, hot water can crack glass, and driving without vision fails the test. Preconditioning heats the cabin in advance — plugged-in EVs keep their full range.'},
 ];
 
 let qz=null;
@@ -1284,6 +1480,140 @@ $('qNext').addEventListener('click',()=>{
 });
 $('quizGo').addEventListener('click',startQuiz);
 $('quizAgain').addEventListener('click',startQuiz);
+
+/* ================= CLIMATE ================= */
+const CL={dSeat:0,pSeat:0,wheel:0,fan:2,temp:21,auto:true,maxDef:false,rearDef:false,precon:false,fogF:true,fogR:true};
+function renderCL(){
+  $('hgWheel').dataset.l=CL.wheel; $('hgDSeat').dataset.l=CL.dSeat; $('hgPSeat').dataset.l=CL.pSeat;
+  [['ppWheel',CL.wheel],['ppDSeat',CL.dSeat],['ppPSeat',CL.pSeat]].forEach(([id,l])=>{
+    [...$(id).children].forEach((p,i)=>p.classList.toggle('on',i<l));
+  });
+  $('bcWheel').classList.toggle('hot',CL.wheel>0);
+  $('bcDSeat').classList.toggle('hot',CL.dSeat>0);
+  $('bcPSeat').classList.toggle('hot',CL.pSeat>0);
+  $('bcMaxDef').classList.toggle('on',CL.maxDef);
+  $('bcRearDef').classList.toggle('on',CL.rearDef);
+  $('bcPrecon').classList.toggle('on',CL.precon);
+  $('cwF').classList.toggle('clear',!CL.fogF);
+  $('cwR').classList.toggle('clear',!CL.fogR);
+  $('clTemp').innerHTML=CL.temp.toFixed(1)+'°C<small>TEMP'+(CL.auto?' · AUTO':'')+'</small>';
+  $('clFan').innerHTML=(CL.maxDef?'MAX':CL.fan)+'<small>FLÄKT</small>';
+  const bits=[];
+  if(CL.maxDef) bits.push('<b style="color:var(--ice)">MAX DEFROST</b>');
+  if(CL.rearDef) bits.push('<b>bakruta värme</b>');
+  if(CL.dSeat) bits.push('förarstol <b>'+CL.dSeat+'</b>');
+  if(CL.pSeat) bits.push('passagerare <b>'+CL.pSeat+'</b>');
+  if(CL.wheel) bits.push('ratt <b>'+CL.wheel+'</b>');
+  if(CL.precon) bits.push('<b style="color:var(--green)">förkonditionering ✓</b>');
+  bits.push((CL.fogF||CL.fogR)?'<b style="color:var(--amber)">imma!</b>':'siktbar ✓');
+  $('clStatus').innerHTML='KLIMAT · '+bits.join(' · ');
+}
+function cycleHeat(key){ CL[key]=CL[key]===0?3:CL[key]-1; beep(540+CL[key]*70,.05,.04); }
+$('bcWheel').addEventListener('click',()=>{cycleHeat('wheel'); cact('cl-wheel'); renderCL();});
+$('bcDSeat').addEventListener('click',()=>{cycleHeat('dSeat'); cact('cl-dseat'); renderCL();});
+$('bcPSeat').addEventListener('click',()=>{cycleHeat('pSeat'); cact('cl-pseat'); renderCL();});
+$('bcMaxDef').addEventListener('click',()=>{
+  CL.maxDef=!CL.maxDef; beep(CL.maxDef?900:500,.08,.05,'sine');
+  if(CL.maxDef){ CL.fogF=false; toast('Max defrost: full fan + A/C on the windscreen — imman releases in seconds.'); }
+  cact('cl-maxdef'); renderCL();
+});
+$('bcRearDef').addEventListener('click',()=>{
+  CL.rearDef=!CL.rearDef; beep(CL.rearDef?820:480,.07,.05,'sine');
+  if(CL.rearDef){ CL.fogR=false; }
+  cact('cl-reardef'); renderCL();
+});
+$('bcPrecon').addEventListener('click',()=>{
+  CL.precon=!CL.precon; beep(CL.precon?760:460,.08,.05,'sine');
+  if(CL.precon){ CL.fogF=false; CL.fogR=false;
+    toast('Parking climate set — warm, ice-free car before you drive. <b>EV: precondition while plugged in</b> to keep your range.');
+  }
+  cact('cl-precon'); renderCL();
+});
+$('bcFog').addEventListener('click',()=>{
+  CL.fogF=true; CL.fogR=true; CL.maxDef=false; CL.rearDef=false; CL.precon=false;
+  beep(300,.1,.04,'sine'); cact('cl-fog'); renderCL();
+  toast('❄ Cold, damp morning — both windows misted. Clear them before driving!');
+});
+$('bcTup').addEventListener('click',()=>{ if(CL.temp<28)CL.temp+=0.5; beep(700,.04,.04); cact('cl-temp'); renderCL(); });
+$('bcTdn').addEventListener('click',()=>{ if(CL.temp>16)CL.temp-=0.5; beep(560,.04,.04); cact('cl-temp'); renderCL(); });
+$('bcFup').addEventListener('click',()=>{ if(CL.fan<5)CL.fan++; CL.auto=false; beep(660,.04,.04); cact('cl-fan'); renderCL(); });
+$('bcFdn').addEventListener('click',()=>{ if(CL.fan>0)CL.fan--; CL.auto=false; beep(520,.04,.04); cact('cl-fan'); renderCL(); });
+
+/* --- climate mini-drill --- */
+const CTASKS=[
+ {cmd:'The windscreen is misted — clear it the fastest way', sv:'Få bort imman på vindrutan', how:'Tap MAX DEFROST (the windscreen symbol with wavy arrows).', pre:s=>!s.maxDef, check:s=>s.maxDef},
+ {cmd:'Clear the rear window and door mirrors', sv:'Få bort imman på bakrutan', how:'Tap REAR DEFROST (the rectangle with wavy arrows).', pre:s=>!s.rearDef, check:s=>s.rearDef},
+ {cmd:'Heat the driver’s seat to maximum', sv:'Förarstolens värme på max', how:'Tap the driver seat icon once — first tap is HIGH (3 bars).', pre:s=>s.dSeat!==3, check:s=>s.dSeat===3},
+ {cmd:'Passenger seat heat on LOW', sv:'Passagerarstolen på låg värme', how:'Tap the passenger seat icon three times: high → med → low.', pre:s=>s.pSeat!==1, check:s=>s.pSeat===1},
+ {cmd:'Turn the heated steering wheel on', sv:'Sätt på rattvärmen', how:'Tap the steering-wheel-with-waves icon.', pre:s=>s.wheel===0, check:s=>s.wheel>0},
+ {cmd:'Switch ALL seat and wheel heating off', sv:'Stäng av all värme i stolar och ratt', how:'Cycle each icon down to 0 bars.', pre:s=>s.dSeat>0||s.pSeat>0||s.wheel>0, check:s=>!s.dSeat&&!s.pSeat&&!s.wheel},
+ {cmd:'It will be −10 °C tomorrow at 07:00 — prepare the car the smart way', sv:'Förbered bilen inför en kall morgon', how:'Toggle PRECONDITION (förkonditionering) — set a timer in the real Climate app.', pre:s=>!s.precon, check:s=>s.precon},
+ {cmd:'Set the fan to maximum manually', sv:'Fläkten på max', how:'Tap fan + until 5.', pre:s=>s.fan!==5, check:s=>s.fan===5},
+];
+const CROUND=6;
+let cd=null, cdLock=false;
+function startCDrill(){
+  cd={i:0,score:0,results:[],last:null};
+  const pool=[...CTASKS];
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]];}
+  cd.queue=pool;
+  $('cdDone').style.display='none'; $('cdLive').style.display='block';
+  $('cdStartBtn').style.display='none';
+  $('cdHintBtn').style.display='inline-block'; $('cdSkipBtn').style.display='inline-block';
+  nextCTask();
+}
+function nextCTask(){
+  if(!cd) return;
+  if(cd.results.length>=CROUND){
+    $('cdLive').style.display='none'; $('cdDone').style.display='block';
+    $('cdFinal').textContent=cd.score+' p';
+    const okc=cd.results.filter(r=>r==='ok').length;
+    $('cdVerdict').textContent= okc===CROUND ? 'Varm och klar sikt — perfect! 🟢' : okc+'/'+CROUND+' — re-read the symbol list below and go again.';
+    cd.active=null; return;
+  }
+  let tries=0;
+  while(tries<cd.queue.length*2){
+    const t=cd.queue[cd.i%cd.queue.length]; cd.i++;
+    if((t.pre?t.pre(CL):!t.check(CL)) && t!==cd.last){ cd.active=t; cd.last=t; break; }
+    tries++;
+  }
+  $('cdCard').classList.remove('showHow');
+  renderCD();
+}
+function renderCD(){
+  if(!cd||!cd.active) return;
+  $('cdCmd').textContent='“'+cd.active.cmd+'”';
+  $('cdSv').textContent=cd.active.sv;
+  $('cdHow').textContent='→ '+cd.active.how;
+  $('cdScore').textContent=cd.score;
+  const bits=$('cdBits'); bits.innerHTML='';
+  for(let i=0;i<CROUND;i++){
+    const b=document.createElement('i');
+    if(cd.results[i]==='ok')b.classList.add('ok');
+    if(cd.results[i]==='skip')b.classList.add('skip');
+    bits.appendChild(b);
+  }
+}
+function cact(name){
+  if(!cd||!cd.active||cdLock) return;
+  if(cd.active.check(CL)){
+    cdLock=true;
+    const card=$('cdCard');
+    card.classList.remove('ok'); void card.offsetWidth; card.classList.add('ok');
+    cd.score += card.classList.contains('showHow')?5:10;
+    cd.results.push('ok'); okSound();
+    $('cdCmd').textContent='✔ '+cd.active.cmd;
+    renderCD();
+    setTimeout(()=>{cdLock=false; nextCTask();},1100);
+  }
+}
+$('cdStartBtn').addEventListener('click',startCDrill);
+$('cdAgain').addEventListener('click',startCDrill);
+$('cdHintBtn').addEventListener('click',()=>$('cdCard').classList.add('showHow'));
+$('cdSkipBtn').addEventListener('click',()=>{
+  if(!cd||!cd.active||cdLock) return;
+  cd.results.push('skip'); errSound(); toast('→ '+cd.active.how); nextCTask();
+});
 
 /* ================= GUIDE (diagrams + photos) ================= */
 function arrowV(x,y1,y2){ /* vertical arrow line with head at y2 */
@@ -1365,6 +1695,16 @@ const PHOTOS=[
  {img:'img/xc40_stalk.jpg', title:'XC40 — right stalk tip', alt:'Close-up of Volvo XC40 right wiper stalk end',
   pins:[{x:87.1,y:66.5,t:'Rear-window wiper buttons: intermittent (top) · continuous (bottom)'},
         {x:85,y:81.2,t:'Ridged thumbwheel — rain-sensor sensitivity'}]},
+ {img:'img/xc40_start.jpg', title:'XC40 — start button & right stalk', alt:'Volvo XC40 start engine stop button below the right stalk',
+  pins:[{x:60.4,y:71.6,t:'START ENGINE STOP — foot on the brake, then press (the EV simply becomes “READY”)'},
+        {x:44.6,y:21.1,t:'Right stalk thumbwheel (rain-sensor sensitivity)'},
+        {x:57.6,y:19.7,t:'Rear-wiper buttons on the stalk tip'}]},
+ {img:'img/xc40_console.jpg', title:'Centre console — gear & parking brake', alt:'Volvo centre console with gear selector, parking brake and auto hold buttons',
+  pins:[{x:57,y:49,t:'Gear selector: P · R · N · D'},
+        {x:25.3,y:74.3,t:'(P) electric parking brake — pull up to apply; red (P) lights in the display'},
+        {x:13.9,y:83.7,t:'(A) Auto Hold — holds the brakes at standstill until you press the accelerator'}]},
+ {img:'img/xc60_screen.jpg', title:'XC60 — centre display & climate bar', alt:'Volvo XC60 centre touchscreen with climate bar at the bottom',
+  pins:[{x:51.3,y:68.6,t:'Climate bar — temperature, seat heating, heated wheel and defrost all live in this bottom row (see the Climate tab)'}]},
 ];
 function photoCardHTML(p){
   const pins=p.pins.map((q,i)=>`<span class="pin" style="left:${q.x}%;top:${q.y}%">${i+1}</span>`).join('');
@@ -1416,6 +1756,7 @@ document.body.dataset.tab='cockpit';
 buildChecks();
 buildGuide();
 render();
+renderCL();
 </script>
 </body>
 </html>

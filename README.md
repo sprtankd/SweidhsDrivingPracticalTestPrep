@@ -12,9 +12,13 @@ Single file, no build step, works offline after first load (Google Fonts are the
   rear wiper, sensitivity thumbwheel), with a live telltale cluster and animated windscreen.
 - **Examiner drill** — 10 random spoken-style commands ("Blinka höger…"), validated against
   what you actually do on the stalks. Score, streak, hints.
-- **Guide** — labelled stalk diagrams plus real annotated photos of the XC40/XC60 stalks
-  (`img/`, Wikimedia Commons, CC BY-SA 4.0: Dinkun Chen, deathpallie325 — cropped/brightened).
-  On wide desktop screens the guide also docks left/right of the cockpit.
+- **Climate** — interactive climate bar (heated seats, heated steering wheel, max defrost,
+  rear defrost, preconditioning/förkonditionering) with a misting cabin that reacts, a symbol
+  reference, and its own examiner mini-drill ("clear the imma the fastest way").
+- **Guide** — labelled stalk diagrams plus 7 real annotated photos: stalks, START button,
+  parking brake (P)/Auto Hold (A) console, and the centre-display climate bar
+  (`img/`, Wikimedia Commons, CC BY-SA 4.0: Dinkun Chen, deathpallie325, Damian B Oh —
+  cropped/brightened). On wide desktop screens the guide docks left/right of the cockpit.
 - **Checks** — säkerhetskontroll study cards: inside / outside / under the bonnet / other,
   with XC40-EV and XC60-PHEV specific notes (no oil on the EV, no dipstick on the T8, etc.).
 - **Quiz** — examiner-style multiple choice with explanations.
